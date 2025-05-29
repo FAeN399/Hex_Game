@@ -1,0 +1,15 @@
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "playerId": "player1",
+  "cards": [
+    {
+      "id": "card1",
+      "name": "Flame Adept",
+      "type": "unit",
+      "rarity": "common",
+      "edges": ["attack", "defense", "skill", "resource", "link", "element"],
+      "tags": ["fire"],
+      "description": "A novice of the flame arts"
+    }
+  ]
+}

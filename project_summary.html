@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HexCard Forge Nexus – Project Summary</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=IM+Fell+English+SC&family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Core Purples */
+      --violet-abyss: #0E0815;    /* root body bg */
+      --obsidian-petal: #1C0A2D;  /* primary surface */
+      --eld-amethyst: #371A53;    /* elevated cards/panels */
+      --arcane-orchid: #53337A;   /* hovers / focus */
+      --rune-glow: #8151B5;       /* neon accent */
+
+      /* Accents */
+      --ether-cyan: #4BC3EF;      /* links, highlight */
+      --void-magenta: #E85B9E;    /* critical CTA / FX */
+      --gilded-brass: #C7A853;    /* rewards, gold trim */
+
+      /* Text */
+      --text-primary: #E0D7FF;
+      --text-secondary: #C5B8E7;
+      --text-muted: #9F93C5;
+      --text-link: var(--ether-cyan);
+
+      /* Spacing */
+      --space-xs: 0.25rem; /* 4px */
+      --space-sm: 0.5rem;  /* 8px */
+      --space-md: 1rem;    /* 16px */
+      --space-lg: 1.5rem;  /* 24px */
+      --space-xl: 2rem;    /* 32px */
+      --space-xxl: 3rem;   /* 48px */
+      
+      /* Radii */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 20px;
+    }
+
+    body { 
+      font-family: "Inter", sans-serif; 
+      background: var(--violet-abyss); 
+      color: var(--text-primary); 
+      margin: 0; 
+      padding: 0; 
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    header { 
+      background: var(--obsidian-petal); 
+      padding: var(--space-xl) var(--space-md); 
+      text-align: center;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      font-family: "Cinzel Decorative", "IM Fell English SC", serif;
+      font-size: 2.5rem;
+      margin: 0;
+      letter-spacing: 0.05em;
+      line-height: 1.2;
+      text-shadow: 0 0 8px var(--rune-glow), 0 0 12px var(--arcane-orchid);
+    }
+    
+    main { 
+      max-width: 900px; 
+      margin: var(--space-xl) auto; 
+      padding: var(--space-xl); 
+      background: var(--obsidian-petal); 
+      border-radius: var(--radius-lg); 
+      box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    }
+    
+    section { 
+      margin-bottom: var(--space-xxl); 
+    }
+    
+    h2 { 
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.8rem;
+      color: var(--ether-cyan); 
+      margin-top: 0; 
+      margin-bottom: var(--space-md);
+      line-height: 1.3;
+    }
+    
+    h3 {
+      font-family: "Inter", sans-serif;
+      font-size: 1.4rem;
+      line-height: 1.3;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: var(--space-lg);
+      margin-bottom: var(--space-sm);
+    }
+    
+    ul, ol { 
+      margin-left: var(--space-lg); 
+      margin-bottom: var(--space-md);
+    }
+    
+    li {
+      margin-bottom: var(--space-xs);
+    }
+    
+    code, pre { 
+      background: rgba(14, 8, 21, 0.6); 
+      color: var(--ether-cyan); 
+      border-radius: var(--radius-sm); 
+      padding: 2px 6px; 
+      font-family: "JetBrains Mono", monospace;
+    }
+    
+    pre {
+      padding: var(--space-md);
+      overflow-x: auto;
+      margin: var(--space-md) 0;
+      border-left: 3px solid var(--arcane-orchid);
+    }
+    
+    .mono { 
+      font-family: "JetBrains Mono", monospace; 
+      color: var(--gilded-brass); 
+    }
+    
+    .highlight { 
+      color: var(--gilded-brass); 
+    }
+    
+    .table { 
+      background: rgba(14, 8, 21, 0.6); 
+      border-radius: var(--radius-md); 
+      overflow-x: auto;
+      margin: var(--space-md) 0;
+    }
+    
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+    }
+    
+    th, td { 
+      padding: var(--space-sm) var(--space-md); 
+      border-bottom: 1px solid var(--arcane-orchid); 
+    }
+    
+    th { 
+      color: var(--gilded-brass); 
+      text-align: left; 
+      font-weight: 600;
+    }
+    
+    tr:last-child td { 
+      border-bottom: none; 
+    }
+    
+    .footer { 
+      text-align: center; 
+      color: var(--text-muted); 
+      margin: var(--space-xl) 0 0 0; 
+      font-size: 0.95em; 
+    }
+    
+    .card-example { 
+      display: flex; 
+      justify-content: center; 
+      margin: var(--space-lg) 0; 
+    }
+    
+    .hex-card { 
+      width: 160px; 
+      height: 180px; 
+      background: var(--eld-amethyst); 
+      position: relative; 
+      clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      flex-direction: column; 
+      box-shadow: 0 0 16px rgba(129, 81, 181, 0.4);
+    }
+    
+    .flex-row { 
+      display: flex; 
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+    
+    .quote { 
+      font-style: italic; 
+      background: rgba(14, 8, 21, 0.6); 
+      padding: var(--space-md); 
+      border-left: 4px solid var(--ether-cyan); 
+      margin: var(--space-md) 0; 
+    }
+
+    @media (max-width: 768px) {
+      .flex-row > div {
+        width: 100%;
+      }
+      main {
+        padding: var(--space-md);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>HexCard Forge Nexus</h1>
+    <p class="highlight">Hybrid Desktop & Web Toolkit for Card Forging Strategy Games</p>
+  </header>
+  <main>
+    <section>
+      <h2>Project Overview</h2>
+      <p><strong>HexCard Forge Nexus</strong> is a unified application (web & desktop) for creating and playing a hex-card strategy game. It combines three core features:</p>
+      <ol>
+        <li><strong>Forge Characters:</strong> Fuse six hex-cards to create unique characters with combined stats.</li>
+        <li><strong>Map Editor:</strong> Design or procedurally generate hexagonal maps for gameplay.</li>
+        <li><strong>Card Game (Play Mode):</strong> Play a turn-based strategy game where forged characters battle on the hex map.</li>
+      </ol>
+      <p>All workflows share a common data model and UI theme, allowing seamless switching between Forge, Map, and Play screens. The app runs both as a <span class="mono">Tauri</span>-powered desktop app and a browser client, with shared logic and components.</p>
+    </section>
+    <section>
+      <h2>Tech Stack</h2>
+      <div class="table">
+        <table>
+          <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+          <tr><td>Front-end</td><td>React 18, TypeScript, Vite</td><td>UI, fast dev, HMR</td></tr>
+          <tr><td>Rendering</td><td>Three.js, Pixi.js</td><td>3D/2D board & effects</td></tr>
+          <tr><td>Desktop shell</td><td>Tauri 2 (Rust)</td><td>Native FS, packaging</td></tr>
+          <tr><td>State</td><td>Zustand</td><td>Shared state store</td></tr>
+          <tr><td>Validation</td><td>Zod</td><td>Schema/data validation</td></tr>
+          <tr><td>Styling</td><td>Tailwind CSS, CSS Modules</td><td>Theming, accessibility</td></tr>
+          <tr><td>Testing</td><td>Vitest, Playwright, React Testing Library</td><td>Unit, E2E, component tests</td></tr>
+        </table>
+      </div>
+    </section>
+    <section>
+      <h2>Monorepo Structure</h2>
+      <pre>apps/
+  desktop-studio/   # Tauri shell (desktop)
+  web-client/       # Browser client
+packages/
+  engine/           # Core game logic
+  schema/           # Zod data models
+  network/          # WebSocket helpers
+  ui/               # Shared React components
+      </pre>
+      <p>Uses <span class="mono">pnpm workspaces</span> for code sharing between apps and packages.</p>
+    </section>
+    <section>
+      <h2>Key Features</h2>
+      <ul>
+        <li>Seamless switching between <strong>Forge</strong>, <strong>Map</strong>, and <strong>Play</strong> screens (no reloads).</li>
+        <li>Every hex-card is usable anywhere (no mode-specific locks).</li>
+        <li>Map editor supports manual and procedural generation with seeds.</li>
+        <li>Save/load entire project (maps, decks, forged characters, game state) to disk or browser storage.</li>
+        <li>AI assistants for card combos and map generation (planned).</li>
+        <li>Accessible (keyboard navigation, color-blind friendly, WCAG 2.2 AA).</li>
+        <li>Runs offline (desktop) and online (browser).</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Core Data Models</h2>
+      <ul>
+        <li><strong>HexCard:</strong> <code>{ id, name, type, edges, tags, cost, text }</code> – six-edged card with icons and stats.</li>
+        <li><strong>Character:</strong> <code>{ id, name, cards[], stats, abilities[] }</code> – forged from six cards.</li>
+        <li><strong>MapTile:</strong> <code>{ id, terrain, occupant }</code> – hex grid tile.</li>
+        <li><strong>SaveGame:</strong> <code>{ map, deck, forged[], turnState, ... }</code> – full game state.</li>
+      </ul>
+      <p>All data validated with <span class="mono">Zod</span> schemas for runtime safety.</p>
+    </section>
+    <section>
+      <h2>Development Workflow</h2>
+      <ul>
+        <li>Test-driven, prompt-based: Each feature is built via an LLM prompt and validated by automated tests before moving on.</li>
+        <li>Global state via Zustand, persisted to localStorage (web) or disk (desktop).</li>
+        <li>Continuous Integration: GitHub Actions for builds and tests (web, Windows, macOS, Linux).</li>
+      </ul>
+    </section>
+    <section>
+      <h2>How to Run</h2>
+      <ol>
+        <li>Install dependencies: <code>pnpm install</code></li>
+        <li>Start desktop app: <code>pnpm dev:desktop</code></li>
+        <li>Start web client: <code>pnpm dev:web</code></li>
+        <li>Build desktop app: <code>pnpm --filter desktop-studio tauri build</code></li>
+      </ol>
+    </section>
+      <section>
+      <h2>Game Mechanics</h2>
+      <p>HexCard Forge's gameplay revolves around a unique fusion system:</p>
+      <div class="card-example">
+        <div class="hex-card">
+          <span style="color: var(--gilded-brass); font-weight: bold;">HEX CARD</span>
+          <div style="color: var(--ether-cyan); margin: 8px 0;">Six-sided with unique edges</div>
+        </div>
+      </div>
+      <div class="flex-row">
+        <div style="width: 48%;">
+          <h3>Forge Mechanics</h3>
+          <ul>
+            <li>Six cards arranged in a hexagonal pattern combine to create one character</li>
+            <li>Each edge contributes to the character's stats based on its position</li>
+            <li>Edge types: attack, defense, element, resource, skill, and link</li>
+            <li>Strategic combinations unlock synergy bonuses and special abilities</li>
+          </ul>
+        </div>
+        <div style="width: 48%;">
+          <h3>Battle Mechanics</h3>
+          <ul>
+            <li>Turn-based strategy on a hexagonal grid</li>
+            <li>Characters move and attack based on their forged stats</li>
+            <li>Terrain types affect movement and abilities</li>
+            <li>Dynamic line-of-sight and range calculations</li>
+            <li>Weather and environmental effects modify gameplay</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h2>TDD Development Plan</h2>
+      <p>The project follows a unique test-driven development approach powered by AI:</p>
+      <ol>
+        <li><strong>Prompt-based chunks</strong>: Development is broken into manageable chunks with AI prompts</li>
+        <li><strong>Test-first implementation</strong>: Each prompt includes tests that must pass before proceeding</li>
+        <li><strong>Red-Green-Refactor</strong>: Start with failing tests, implement code to make them pass, then refactor</li>
+        <li><strong>Incremental milestones</strong>: Eight major milestones (M-1 through M-8) track progress</li>
+      </ol>
+      <div class="quote">
+        "Each prompt describes a set of tasks and the tests that must pass, and the LLM returns a patch implementing those tasks. The developer then runs the tests; only if they all pass ('green') do they proceed to the next prompt."
+      </div>
+    </section>
+    <section>
+      <h2>Visual Design Direction</h2>
+      <p>The user interface features:</p>
+      <ul>
+        <li>Dark, arcane theme with glowing accents</li>
+        <li>Hexagonal motifs throughout the UI (buttons, cards, board tiles)</li>
+        <li>Three distinctive but cohesive visual styles for each mode:</li>
+        <ul>
+          <li><strong>Forge</strong>: Magical workshop with floating cards and particle effects</li>
+          <li><strong>Map</strong>: Top-down tactical view with terrain painting tools</li>
+          <li><strong>Play</strong>: 3D isometric battlefield with animated characters</li>
+        </ul>
+        <li>Responsive design adapts to browser and desktop environments</li>
+        <li>High-contrast UI elements with color-blind friendly palette</li>
+      </ul>
+    </section>
+</main>
+  <div class="footer">Project summary generated by Cascade AI &mdash; May 29, 2025<br>Signed: <span class="highlight">Cascade &mdash; Your AI Coding Partner</span><br>Updated with arcane-tech style guide and HexForge visualization improvements at 01:34<br>✧ Implemented precise hexagonal geometry with diamond accents and central eye design ✧</div>
+</body>
+</html>

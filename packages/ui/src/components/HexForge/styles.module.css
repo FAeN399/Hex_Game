@@ -1,0 +1,923 @@
+/* HexForge Component Styles */
+
+/* Particle System and Animation Styles */
+@keyframes cardPlacing {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes connectionGlow {
+  0% { filter: brightness(1); opacity: 0.7; }
+  50% { filter: brightness(1.5); opacity: 1; }
+  100% { filter: brightness(1); opacity: 0.7; }
+}
+
+@keyframes connectionPulse {
+  0% { transform: scaleY(1); opacity: 0.8; }
+  50% { transform: scaleY(1.5); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 0.8; }
+}
+
+@keyframes connectionError {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+@keyframes forgeSuccess {
+  0% { transform: scale(1); box-shadow: 0 0 40px rgba(75, 195, 239, 0.3); }
+  50% { transform: scale(1.2); box-shadow: 0 0 80px rgba(199, 168, 83, 0.8); }
+  100% { transform: scale(1); box-shadow: 0 0 40px rgba(75, 195, 239, 0.3); }
+}
+
+@keyframes particlePulse {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.8; }
+}
+
+@keyframes particleTrail {
+  0% { width: 100%; height: 100%; }
+  100% { width: 10%; height: 10%; opacity: 0; }
+}
+
+@keyframes particleRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes particleSparkle {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.8); }
+}
+
+@keyframes particleHueShift {
+  0% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(180deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes particleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes particleStar {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(180deg); }
+}
+
+/* Configuration Manager Styles */
+:root {
+  /* Core Purples */
+  --forge-violet-abyss: var(--violet-abyss, #0E0815);
+  --forge-obsidian-petal: var(--obsidian-petal, #1C0A2D);
+  --forge-eld-amethyst: var(--eld-amethyst, #371A53);
+  --forge-arcane-orchid: var(--arcane-orchid, #53337A);
+  --forge-rune-glow: var(--rune-glow, #8151B5);
+
+  /* Accents */
+  --forge-ether-cyan: var(--ether-cyan, #4BC3EF);
+  --forge-void-magenta: var(--void-magenta, #E85B9E);
+  --forge-gilded-brass: var(--gilded-brass, #C7A853);
+
+  /* Forge specific variables */
+  --socket-size: 120px;
+  --socket-border-width: 2px;
+  --socket-glow-intensity: 0.6;
+  --forge-transition-speed: 0.2s;
+  --connection-line-width: 3px;
+}
+
+/* High Contrast Mode */
+.accessibilityMode {
+  --forge-ether-cyan: #60DDFF;
+  --forge-void-magenta: #FF8C42;
+  --socket-glow-intensity: 0.8;
+  --connection-line-width: 4px;
+}
+
+.forgeContainer {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  height: 600px;
+  margin: 0 auto;
+  background-color: var(--forge-violet-abyss);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 24px rgba(129, 81, 181, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.forgeArea {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.forgeSocketsContainer {
+  position: relative;
+  width: 400px;
+  height: 400px;
+}
+
+.forgeSocket {
+  position: absolute;
+  width: var(--socket-size);
+  height: calc(var(--socket-size) * 1.1547); /* Height for pointy-top hexagon */
+  background-color: var(--forge-obsidian-petal);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  border: var(--socket-border-width) solid var(--forge-arcane-orchid);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all var(--forge-transition-speed) ease;
+  cursor: pointer;
+  transform-origin: center center;
+}
+
+.forgeSocket:hover, .forgeSocket:focus {
+  border-color: var(--forge-ether-cyan);
+  box-shadow: 0 0 16px rgba(75, 195, 239, var(--socket-glow-intensity));
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+.forgeSocket.empty {
+  opacity: 0.7;
+}
+
+.forgeSocket.focused {
+  border-color: var(--forge-ether-cyan);
+  box-shadow: 0 0 24px rgba(75, 195, 239, var(--socket-glow-intensity));
+  z-index: 20;
+}
+
+.forgeSocket.highlighted {
+  border-color: var(--forge-gilded-brass);
+  box-shadow: 0 0 16px var(--forge-gilded-brass);
+}
+
+.forgeSocket.hasCard {
+  opacity: 1;
+}
+
+.forgeCenter {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, 
+    var(--forge-eld-amethyst) 0%, 
+    var(--forge-obsidian-petal) 70%
+  );
+  box-shadow: 0 0 40px rgba(75, 195, 239, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.forgeCenter.forgeActive {
+  box-shadow: 0 0 60px rgba(75, 195, 239, 0.5);
+  animation: forgeSuccess 2s infinite;
+}
+
+.forgeCenter.forgeComplete {
+  box-shadow: 0 0 80px rgba(199, 168, 83, 0.8);
+  animation: forgeSuccess 1.5s infinite;
+}
+
+/* Particle container styles */
+.particleContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 30;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  transition: opacity 0.1s ease;
+}
+
+/* Specialized particle types */
+.particleTrail::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.5;
+  animation: particleTrail 0.6s ease-out;
+}
+
+.particlePulse {
+  animation: particlePulse 1s infinite;
+}
+
+.particleSparkle {
+  animation: particleSparkle 0.6s infinite;
+}
+
+.particleHueShift {
+  animation: particleHueShift 2s linear infinite;
+}
+
+.particleStar {
+  animation: particleStar 2s ease-in-out infinite;
+}
+
+.particleDiamond {
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.particleStar {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+.particleCircle {
+  border-radius: 50%;
+}
+
+/* Type-specific particle styles */
+.particleConnection {
+  filter: blur(1px);
+  mix-blend-mode: lighten;
+}
+
+.particleForge {
+  filter: blur(2px);
+  box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  animation: particleRotate 3s linear infinite;
+}
+
+.particleSuccess {
+  filter: blur(1px);
+  box-shadow: 0 0 15px currentColor, 0 0 30px currentColor;
+}
+
+.particlePlacement {
+  filter: blur(1px);
+  animation: particlePulse 0.8s infinite;
+}
+
+/* Card placement animation */
+.cardPlacingAnimation {
+  animation: cardPlacing 0.6s ease-out forwards;
+}
+
+/* Connection activation animation */
+.connectionActivating {
+  animation: connectionGlow 0.8s ease-in-out;
+}
+
+/* Edge Tooltips */
+.edgeTooltip {
+  position: absolute;
+  transform: translate(-50%, -130%);
+  background-color: var(--forge-obsidian-petal);
+  border: 2px solid var(--forge-arcane-orchid);
+  border-radius: var(--radius-md, 8px);
+  padding: 8px 12px;
+  min-width: 180px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  pointer-events: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.edgeTooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid var(--forge-obsidian-petal);
+}
+
+.validTooltip {
+  border-color: var(--forge-ether-cyan);
+  box-shadow: 0 0 15px rgba(75, 195, 239, 0.3);
+}
+
+.invalidTooltip {
+  border-color: var(--forge-void-magenta);
+  box-shadow: 0 0 15px rgba(232, 91, 158, 0.3);
+}
+
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.edgeIcons {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  justify-content: center;
+  width: 100%;
+}
+
+.connectionSymbol {
+  margin: 0 10px;
+  font-size: 1.2rem;
+}
+
+.validTooltip .connectionSymbol {
+  color: var(--forge-ether-cyan);
+}
+
+.invalidTooltip .connectionSymbol {
+  color: var(--forge-void-magenta);
+}
+
+.tooltipText {
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--text-primary, #E0D7FF);
+}
+
+/* Forge success animation */
+.forgeSuccess {
+  animation: forgeSuccess 2s ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 40px rgba(75, 195, 239, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 60px rgba(75, 195, 239, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 40px rgba(75, 195, 239, 0.3);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes scale {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.connectionLine {
+  position: absolute;
+  height: var(--connection-line-width);
+  background: var(--forge-arcane-orchid);
+  transform-origin: left center;
+  opacity: 0.4;
+  transition: all var(--forge-transition-speed) ease;
+  z-index: 1;
+}
+
+/* Enhanced valid connection styles */
+.connectionLine.validConnection {
+  background: var(--forge-ether-cyan);
+  box-shadow: 0 0 8px var(--forge-ether-cyan);
+  opacity: 0.8;
+  animation: connectionPulse 2s infinite;
+}
+
+/* Add gem decoration to valid connections */
+.connectionLine.validConnection::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--forge-ether-cyan);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 6px var(--forge-ether-cyan);
+  border-radius: 2px;
+  z-index: 2;
+}
+
+/* Enhanced invalid connection styles */
+.connectionLine.invalidConnection {
+  background: var(--forge-void-magenta);
+  opacity: 0.6;
+  animation: connectionError 0.5s ease-in-out;
+}
+
+/* Add X mark to invalid connections */
+.connectionLine.invalidConnection::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-image: linear-gradient(45deg, transparent 45%, var(--forge-void-magenta) 45%, var(--forge-void-magenta) 55%, transparent 55%),
+                    linear-gradient(-45deg, transparent 45%, var(--forge-void-magenta) 45%, var(--forge-void-magenta) 55%, transparent 55%);
+  box-shadow: 0 0 4px var(--forge-void-magenta);
+  border-radius: 50%;
+}
+
+.hexCard {
+  width: var(--socket-size);
+  height: calc(var(--socket-size) * 1.1547);
+  background: var(--forge-eld-amethyst);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+  user-select: none;
+  transition: all var(--forge-transition-speed) ease;
+  cursor: grab;
+  position: relative;
+}
+
+.hexCard:active {
+  cursor: grabbing;
+}
+
+.hexCard.selected {
+  box-shadow: 0 0 20px var(--forge-ether-cyan);
+  transform: scale(1.05);
+}
+
+.hexCard.dragging {
+  opacity: 0.6;
+}
+
+.hexCardName {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  margin-bottom: 5px;
+}
+
+/* Configuration Manager */
+.configManager {
+  margin: 1rem 0;
+  width: 100%;
+}
+
+.configButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.configButton {
+  background-color: var(--forge-obsidian-petal);
+  color: var(--text-primary, white);
+  border: 1px solid var(--forge-arcane-orchid);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.configButton:hover:not(:disabled) {
+  background-color: var(--forge-arcane-orchid);
+  box-shadow: 0 0 8px rgba(83, 51, 122, 0.6);
+}
+
+.configButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.saveButton {
+  border-color: var(--forge-ether-cyan);
+}
+
+.loadButton {
+  border-color: var(--forge-gilded-brass);
+}
+
+.exportButton {
+  border-color: var(--forge-ether-cyan);
+}
+
+.importButton {
+  border-color: var(--forge-gilded-brass);
+}
+
+/* Modal styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(14, 8, 21, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: var(--forge-obsidian-petal);
+  border: 2px solid var(--forge-arcane-orchid);
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 0 30px rgba(83, 51, 122, 0.8);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modalTitle {
+  color: var(--forge-ether-cyan);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--forge-arcane-orchid);
+  padding-bottom: 0.5rem;
+}
+
+.closeButton {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--text-muted, #9F93C5);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  color: var(--text-primary, white);
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #C5B8E7);
+}
+
+.textInput, .textArea {
+  background-color: var(--violet-abyss, #0E0815);
+  border: 1px solid var(--forge-arcane-orchid);
+  border-radius: 4px;
+  padding: 0.5rem;
+  color: var(--text-primary, white);
+  font-family: "Inter", sans-serif;
+}
+
+.textInput:focus, .textArea:focus {
+  outline: none;
+  border-color: var(--forge-ether-cyan);
+  box-shadow: 0 0 0 2px rgba(75, 195, 239, 0.3);
+}
+
+.textArea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Configuration list */
+.configList {
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid var(--forge-eld-amethyst, #371A53);
+  border-radius: 4px;
+  padding: 0.5rem;
+  background-color: var(--violet-abyss, #0E0815);
+}
+
+.configItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: var(--forge-obsidian-petal);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.configItem:hover {
+  background-color: var(--forge-eld-amethyst, #371A53);
+}
+
+.configItem.selected {
+  background-color: var(--forge-arcane-orchid);
+  box-shadow: 0 0 8px rgba(83, 51, 122, 0.6);
+}
+
+.configInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.configName {
+  font-weight: 600;
+  color: var(--text-primary, white);
+}
+
+.configDate {
+  font-size: 0.8rem;
+  color: var(--text-muted, #9F93C5);
+}
+
+.deleteButton {
+  background-color: rgba(232, 91, 158, 0.2);
+  border: 1px solid var(--forge-void-magenta, #E85B9E);
+  color: var(--text-primary, white);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.deleteButton:hover {
+  background-color: rgba(232, 91, 158, 0.4);
+}
+
+.emptyMessage {
+  text-align: center;
+  color: var(--text-muted, #9F93C5);
+  padding: 1rem 0;
+}
+
+.hexCardType {
+  font-family: "Inter", sans-serif;
+  font-size: 0.8rem;
+  color: var(--forge-gilded-brass);
+  margin-bottom: 10px;
+}
+
+.edgeIcons {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.edgeIcon {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: var(--forge-obsidian-petal);
+  border: 1px solid var(--forge-arcane-orchid);
+  color: white;
+  font-size: 12px;
+}
+
+/* Edge position calculations for pointy-top hexagon */
+.edgeIcon:nth-child(1) { /* Top */
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.edgeIcon:nth-child(2) { /* Top right */
+  top: 25%;
+  right: 10%;
+}
+
+.edgeIcon:nth-child(3) { /* Bottom right */
+  bottom: 25%;
+  right: 10%;
+}
+
+.edgeIcon:nth-child(4) { /* Bottom */
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.edgeIcon:nth-child(5) { /* Bottom left */
+  bottom: 25%;
+  left: 10%;
+}
+
+.edgeIcon:nth-child(6) { /* Top left */
+  top: 25%;
+  left: 10%;
+}
+
+.statsPanel {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--forge-obsidian-petal);
+  border-radius: 8px;
+  padding: 20px;
+  width: 220px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  color: white;
+  z-index: 10;
+}
+
+.statsHeader {
+  font-family: "Cinzel Decorative", serif;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: var(--forge-ether-cyan);
+  text-align: center;
+}
+
+.statRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-family: "Inter", sans-serif;
+}
+
+.statLabel {
+  color: var(--forge-gilded-brass);
+}
+
+.statValue {
+  font-family: "JetBrains Mono", monospace;
+  color: white;
+}
+
+.forgeButtonContainer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.forgeButton {
+  background: var(--forge-gilded-brass);
+  border: none;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  color: var(--forge-violet-abyss);
+  font-family: "Cinzel Decorative", serif;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(199, 168, 83, 0.6);
+}
+
+.forgeButton:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(199, 168, 83, 0.8);
+}
+
+.forgeButton:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 15px rgba(199, 168, 83, 0.5);
+}
+
+.forgeButton.forging {
+  animation: spin 1.5s linear infinite, pulse 2s infinite;
+  background: var(--forge-gilded-brass);
+  color: var(--forge-violet-abyss);
+}
+
+.forgeButton:hover:not(:disabled) {
+  background-color: var(--forge-rune-glow);
+  box-shadow: 0 0 15px var(--forge-rune-glow);
+}
+
+.forgeButton:disabled {
+  background-color: rgba(83, 51, 122, 0.5);
+  cursor: not-allowed;
+}
+
+.forgeButton.readyToForge {
+  background-color: var(--forge-ether-cyan);
+  box-shadow: 0 0 10px var(--forge-ether-cyan);
+}
+
+/* Particle effects */
+.particleContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--forge-ether-cyan);
+  border-radius: 50%;
+  opacity: 0;
+  z-index: 2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .forgeContainer {
+    height: 500px;
+  }
+  
+  .forgeSocketsContainer {
+    width: 300px;
+    height: 300px;
+  }
+  
+  :root {
+    --socket-size: 90px;
+  }
+  
+  .statsPanel {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    width: 90%;
+    max-width: 300px;
+    margin: 15px auto 0;
+  }
+}

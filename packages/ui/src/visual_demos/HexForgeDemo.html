@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<!-- 
+  HexCard Forge Visual Demo - Updated Design
+  
+  This demo has been updated with:
+  1. Hexagon shapes with horizontal orientation (flat top/bottom)
+  2. Perfect circle arrangement with CSS transforms
+  3. Center star element with purple circle and black dot
+  4. Light blue hexagons with diagonal grid patterns
+  5. Red diamond accents on hexagons
+  6. Green connection lines between hexagons
+  7. Updated edge connection indicators
+  
+  Visual design matches the provided reference drawing with:
+  - Light blue hexagons (#AFD4E8) with diagonal grid patterns
+  - Red diamonds as accent elements
+  - Green connection lines between hexagons
+  - Center gold star with purple circle and black dot
+  
+  Last modified: May 29, 2025
+  By: Cascade AI
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HexCard Forge - Visual Demo</title>
+  <!-- Add draggable interaction library -->
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Core Purples */
+      --violet-abyss: #0E0815;
+      --obsidian-petal: #1C0A2D;
+      --amethyst-dusk: #372549;
+      --twilight-lavender: #573B6D;
+      --mystic-purple: #774C91;
+      --arcane-mauve: #996BB7;
+      --twilight-dust: #B886DD;
+
+      /* Accent Purples */
+      --lavender-frost: #DAC6FF;
+      --pale-orchid: #FFE4FF;
+      
+      /* Core Blues */
+      --deep-cosmic: #0F1A30;
+      --night-ocean: #174066;
+      --forge-blue: #70A4C4;
+      --etheric-azure: #AFD4E8;
+      --celestial-glow: #D6F0FF;
+      
+      /* Arcane Golds */
+      --forge-gold: #F2C94C;
+      --forge-orange: #E0A030;
+      
+      /* Blues */
+      --ether-cyan: #5CE1E6;
+      --energetic-blue: #1D7CF2;
+      
+      /* Box Shadows */
+      --shadow-dreamy: 0 1px 2px rgba(0, 0, 0, 0.07), 
+                0 2px 4px rgba(0, 0, 0, 0.07), 
+                0 4px 8px rgba(0, 0, 0, 0.07), 
+                0 8px 16px rgba(0, 0, 0, 0.07),
+                0 16px 32px rgba(0, 0, 0, 0.07), 
+                0 32px 64px rgba(0, 0, 0, 0.07);
+      
+      /* Component Sizing */
+      --hex-width: 500px;
+      --hex-height: 500px;
+      --socket-width: 90px;
+      --socket-height: 90px;
+      --socket-distance: 180px;
+      --center-size: 100px;
+      
+      /* Connection Line Size */
+      --connection-line-width: 90px;
+      --connection-line-height: 8px;
+      --connection-gem-size: 20px;
+      
+      /* Socket Background */
+      --socket-bg-color: #AFD4E8;
+      --socket-bg-highlight: #D6F0FF;
+      --socket-border-color: #70A4C4;
+      --border-highlight: rgba(136, 188, 222, 0.8);
+      --grid-line-color: rgba(16, 58, 102, 0.3);
+      --diamond-color: #E85B9E;
+      --connection-line-color: #4CAF50;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--violet-abyss);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      font-family: 'Cinzel Decorative', serif;
+      text-align: center;
+      padding: 2rem;
+      width: 100%;
+      background-color: var(--obsidian-petal);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 8px var(--rune-glow), 0 0 12px var(--arcane-orchid);
+    }
+
+    .subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      margin-top: 0.5rem;
+      color: var(--text-secondary);
+    }
+
+    main {
+      max-width: 1200px;
+      width: 90%;
+      padding: 2rem;
+    }
+
+    .demo-section {
+      margin-bottom: 4rem;
+    }
+
+    h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      color: var(--ether-cyan);
+      margin-top: 0;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--arcane-orchid);
+      padding-bottom: 0.5rem;
+    }
+
+    .demo-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .forge-container {
+      position: relative;
+      width: 100%;
+      height: 800px;
+      background-color: var(--obsidian-petal);
+      border-radius: 16px;
+      box-shadow: 0 0 24px rgba(129, 81, 181, 0.3), inset 0 0 60px rgba(14, 8, 21, 0.6);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 30px;
+    }
+    
+    .card-inventory {
+      position: relative;
+      width: 100%;
+      margin-top: 30px;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      background-color: rgba(14, 8, 21, 0.4);
+      border-radius: 16px;
+      box-shadow: inset 0 0 20px rgba(83, 51, 122, 0.5);
+    }
+    
+    .inventory-title {
+      width: 100%;
+      text-align: center;
+      font-family: 'Cinzel Decorative', serif;
+      color: var(--ether-cyan);
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px rgba(75, 195, 239, 0.5);
+    }
+
+    .demo-description {
+      background-color: rgba(28, 10, 45, 0.7);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-left: 3px solid var(--arcane-orchid);
+    }
+
+    .demo-image {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .hex-grid {
+      position: relative;
+      width: var(--hex-width);
+      height: var(--hex-height);
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+      margin-top: 50px;
+    }
+    
+    /* Hex socket positioning - arranged in a perfect circle */
+    /* Positioning sockets in a perfect circle using transform */
+    #socket1 { 
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) translate(0, calc(-1 * var(--socket-distance))); 
+    }
+    #socket2 { 
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) translate(calc(var(--socket-distance) * 0.866), calc(-1 * var(--socket-distance) * 0.5)); 
+    }
+    #socket3 { 
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) translate(calc(var(--socket-distance) * 0.866), calc(var(--socket-distance) * 0.5)); 
+    }
+    #socket4 { 
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) translate(0, var(--socket-distance)); 
+    }
+    #socket5 { 
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) translate(calc(-1 * var(--socket-distance) * 0.866), calc(var(--socket-distance) * 0.5)); 
+    }
+    #socket6 { 
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) translate(calc(-1 * var(--socket-distance) * 0.866), calc(-1 * var(--socket-distance) * 0.5)); 
+    }
+
+    .hex-socket {
+      position: absolute;
+      width: var(--socket-width);
+      height: var(--socket-height);
+      background-color: var(--socket-bg-color);
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      border: 2px solid var(--socket-border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      transition: all 0.2s ease;
+      transform-origin: center center;
+      z-index: 2;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      /* Make sure aspect ratio is correct for a perfect hexagon */
+      aspect-ratio: 1;
+    }
+    
+    /* Diagonal grid pattern inside hexagons */
+    .hex-socket::before {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: -100%;
+      right: -100%;
+      bottom: -100%;
+      background-image: 
+        linear-gradient(45deg, var(--grid-line-color) 1px, transparent 1px),
+        linear-gradient(-45deg, var(--grid-line-color) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: -1;
+    }
+    
+    .hex-socket::after {
+      content: '';
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      background-color: rgba(255, 255, 255, 0.15);
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      z-index: -1;
+    }
+    
+    /* Red diamond accents */
+    .diamond-accent {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      background-color: var(--diamond-color);
+      transform: rotate(45deg);
+      z-index: 1;
+    }
+    
+    /* Positioning for diamond accents */
+    .hex-socket .diamond-top {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+    }
+    
+    .hex-socket .diamond-right {
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+    }
+    
+    .hex-socket .diamond-bottom {
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+    }
+    
+    .hex-socket .diamond-left {
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+    }
+    
+    .hex-socket:hover {
+      transform: scale(1.05) translateZ(10px);
+      border-color: var(--forge-gold);
+      box-shadow: 0 0 25px var(--forge-gold), 0 0 5px var(--forge-gold) inset;
+      z-index: 10;
+    }
+    
+    .hex-socket.filled {
+      background-color: #5383a0;
+      border-color: var(--ether-cyan);
+      box-shadow: 0 0 15px var(--ether-cyan), 0 0 10px var(--ether-cyan) inset;
+    }
+    
+    .hex-socket.dragging-over {
+      transform: scale(1.1) translateZ(20px);
+      box-shadow: 0 0 30px var(--void-magenta), 0 0 10px var(--void-magenta) inset;
+      border-color: var(--void-magenta);
+    }
+
+    .hex-center {
+      position: absolute;
+      width: var(--center-size);
+      height: var(--center-size);
+      z-index: 3;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    /* Star shaped center with purple circle and black dot */
+    .center-star {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* Gold star shape */
+    .star-shape {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: var(--forge-gold);
+      clip-path: polygon(
+        50% 0%, 61% 35%, 98% 35%, 68% 57%,
+        79% 91%, 50% 70%, 21% 91%, 32% 57%,
+        2% 35%, 39% 35%
+      );
+      z-index: 1;
+    }
+    
+    /* Purple circle in center */
+    .center-circle {
+      position: absolute;
+      width: 60%;
+      height: 60%;
+      border-radius: 50%;
+      background-color: var(--amethyst-dusk);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+    
+    /* Black dot in center */
+    .center-dot {
+      position: absolute;
+      width: 20%;
+      height: 20%;
+      border-radius: 50%;
+      background-color: black;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+    }
+    
+    /* Pupil/tiny dot in the center of the eye */
+    .center-dot::after {
+      content: '';
+      position: absolute;
+      width: 25%;
+      height: 25%;
+      border-radius: 50%;
+      background-color: white;
+      left: 35%;
+      top: 35%;
+      box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+    }
+    
+    .center-eye {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--forge-gold) 0%, #E0A030 70%, #D99000 100%);
+      box-shadow: 0 0 25px rgba(242, 201, 76, 0.8), inset 0 0 12px rgba(255, 255, 255, 0.5);
+      z-index: 6;
+      animation: eyePulse 4s infinite alternate ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    @keyframes eyePulse {
+      0% { box-shadow: 0 0 15px rgba(242, 201, 76, 0.6); }
+      100% { box-shadow: 0 0 30px rgba(242, 201, 76, 0.9), 0 0 45px rgba(242, 201, 76, 0.3); }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .connection-line {
+      position: absolute;
+      height: calc(var(--connection-line-height) * 0.6);
+      background-color: var(--connection-line-color);
+      transform-origin: left center;
+      z-index: 1;
+      box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    }
+    
+    .connection-line.active {
+      height: 4px;
+      background: var(--ether-cyan);
+      box-shadow: 0 0 12px var(--ether-cyan), 0 0 4px var(--ether-cyan) inset;
+      opacity: 1;
+    }
+    
+    .connection-gem {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      transform: rotate(45deg);
+      background-color: var(--diamond-color);
+      z-index: 2;
+      box-shadow: 0 0 10px rgba(232, 91, 158, 0.6);
+    }
+    
+    .connection-gem::before {
+      content: '';
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      top: 10%;
+      left: 10%;
+      background-image: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
+      animation: gemSparkle 3s infinite ease;
+    }
+    
+    @keyframes gemSparkle {
+      0%, 100% { opacity: 0; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+    
+    .active-gem {
+      background-color: var(--forge-gold);
+      border: 2px solid var(--forge-orange);
+      box-shadow: 0 0 20px var(--forge-gold), 0 0 30px var(--forge-gold);
+      animation: pulse 1.5s infinite alternate;
+      z-index: 3;
+    }
+    
+    .active-gem::before {
+      animation: gemSparkle 1.5s infinite ease;
+      background-image: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.7) 50%, transparent 70%);
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 5px var(--forge-gold); }
+      100% { box-shadow: 0 0 20px var(--forge-gold), 0 0 30px rgba(224, 160, 48, 0.5); }
+    }
+
+    .valid-connection {
+      background: var(--forge-gold);
+      box-shadow: 0 0 8px var(--forge-gold);
+      opacity: 0.9;
+    }
+
+    .hex-card {
+      position: absolute;
+      width: 120px;
+      height: calc(120px * 1.1547);
+      background: var(--forge-medium-blue);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 5px;
+      margin: 0 10px;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+      cursor: grab;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+      touch-action: none;
+      background-image: 
+        linear-gradient(60deg, rgba(92, 144, 176, 0.7) 25%, transparent 25%, transparent 75%, rgba(92, 144, 176, 0.7) 75%),
+        linear-gradient(120deg, rgba(92, 144, 176, 0.7) 25%, transparent 25%, transparent 75%, rgba(92, 144, 176, 0.7) 75%);
+      background-size: 30px 30px;
+      box-shadow: 0 0 15px rgba(66, 135, 200, 0.3);
+    }
+    
+    .hex-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: 30px 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      user-select: none;
+      touch-action: none;
+    }
+    
+    .center-eye {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--forge-gold) 0%, #E0A030 70%, #D99000 100%);
+      box-shadow: 0 0 25px rgba(242, 201, 76, 0.8), inset 0 0 12px rgba(255, 255, 255, 0.5);
+      z-index: 6;
+      animation: eyePulse 4s infinite alternate ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    @keyframes eyePulse {
+      0% { box-shadow: 0 0 15px rgba(242, 201, 76, 0.6); }
+      100% { box-shadow: 0 0 30px rgba(242, 201, 76, 0.9), 0 0 45px rgba(242, 201, 76, 0.3); }
+    }
+    
+    .inventory-card:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 0 0 15px var(--ether-cyan);
+      border-color: var(--ether-cyan);
+      z-index: 20;
+    }
+    
+    .inventory-card.rare {
+      background-color: #794c9a;
+      border-color: #9a67bf;
+      background-image: 
+        linear-gradient(60deg, rgba(121, 76, 154, 0.7) 25%, transparent 25%, transparent 75%, rgba(121, 76, 154, 0.7) 75%),
+        linear-gradient(120deg, rgba(121, 76, 154, 0.7) 25%, transparent 25%, transparent 75%, rgba(121, 76, 154, 0.7) 75%);
+    }
+    
+    .inventory-card.epic {
+      background-color: #c7a853;
+      border-color: #e0c16c;
+      background-image: 
+        linear-gradient(60deg, rgba(199, 168, 83, 0.7) 25%, transparent 25%, transparent 75%, rgba(199, 168, 83, 0.7) 75%),
+        linear-gradient(120deg, rgba(199, 168, 83, 0.7) 25%, transparent 25%, transparent 75%, rgba(199, 168, 83, 0.7) 75%);
+    }
+    
+    .card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: white;
+      margin-bottom: 5px;
+      text-align: center;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    }
+
+    .card-type {
+      font-size: 0.7rem;
+      color: var(--gilded-brass);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .card-edges {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+    
+    .card-edge {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #4287c8;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    .card-edge.link {
+      background-color: var(--ether-cyan);
+    }
+    
+    .card-edge.power {
+      background-color: var(--forge-red);
+    }
+    
+    .card-edge.magic {
+      background-color: var(--rune-glow);
+    }
+
+    .edge-icons {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .edge-icon {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background: var(--obsidian-petal);
+      border: 1px solid var(--arcane-orchid);
+      color: white;
+      font-size: 12px;
+    }
+
+    .sequence-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .sequence-step {
+      flex: 1;
+      min-width: 200px;
+      background-color: var(--obsidian-petal);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .step-number {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      background-color: var(--arcane-orchid);
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      margin-right: 0.5rem;
+    }
+
+    .step-title {
+      font-weight: 600;
+      color: var(--ether-cyan);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .step-description {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .stats-panel {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: var(--obsidian-petal);
+      border-radius: 8px;
+      padding: 20px;
+      width: 220px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .stats-header {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      color: var(--ether-cyan);
+      text-align: center;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: var(--gilded-brass);
+    }
+
+    .stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .sequence-step {
+        flex: 0 0 100%;
+      }
+      
+      .hex-grid {
+        transform: scale(0.8);
+        width: 500px;
+        height: 500px;
+      }
+      
+      .forge-container {
+        height: auto;
+        padding: 20px 10px;
+      }
+      
+      .stats-panel {
+        position: relative;
+        right: auto;
+        top: auto;
+        transform: none;
+        margin: 20px auto 0;
+        width: 90%;
+        max-width: 300px;
+      }
+      
+      .card-inventory {
+        padding: 10px;
+      }
+      
+      .inventory-card {
+        width: 80px;
+        height: calc(80px * 1.1547);
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .hex-grid {
+        transform: scale(0.6);
+        width: 400px;
+        height: 400px;
+        margin-top: -50px;
+        margin-bottom: -50px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .subtitle {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>HexCard Forge Component</h1>
+    <div class="subtitle">Visual Demo & Implementation Details</div>
+  </header>
+
+  <main>
+    <div class="demo-section">
+      <h2>Component Concept</h2>
+      <div class="demo-description">
+        <p>The HexForge component is a central gameplay mechanism where players combine six hex-shaped cards to create characters with unique abilities and stats. The component visualizes the card slots in a hexagonal pattern, enforces game rules for valid card combinations, and calculates the resulting character statistics.</p>
+      </div>
+            <div class="forge-container" style="display: flex; flex-direction: column; align-items: center; background-color: var(--violet-abyss); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 30px; margin-bottom: 40px;">
+        <div class="hex-grid">
+          <!-- Center forge with eye element based on reference image -->
+          <div class="hex-center">
+            <div class="center-star">
+              <div class="star-shape"></div>
+              <div class="center-circle"></div>
+              <div class="center-dot"></div>
+            </div>
+          </div>
+      
+          <!-- Connection lines are positioned dynamically based on socket positions -->
+          <div class="connection-line" id="line1-2"></div>
+          <div class="connection-gem" id="gem1-2"></div>
+          
+          <div class="connection-line active" id="line2-3"></div>
+          <div class="connection-gem active-gem" id="gem2-3"></div>
+          
+          <div class="connection-line" id="line3-4"></div>
+          <div class="connection-gem" id="gem3-4"></div>
+          
+          <div class="connection-line" id="line4-5"></div>
+          <div class="connection-gem" id="gem4-5"></div>
+          
+          <div class="connection-line" id="line5-6"></div>
+          <div class="connection-gem" id="gem5-6"></div>
+          
+          <div class="connection-line active" id="line6-1"></div>
+          <div class="connection-gem active-gem" id="gem6-1"></div>
+          
+          <!-- Socket positions are automatically calculated in CSS -->
+          <div class="hex-socket filled" id="socket1">
+            <div class="card-name">Arcane Guardian</div>
+            <div class="card-type">unit</div>
+            <div class="card-edges">
+              <div class="card-edge link" style="top: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge" style="top: 25%; right: 5px;"></div>
+              <div class="card-edge" style="bottom: 25%; right: 5px;"></div>
+              <div class="card-edge link" style="bottom: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge" style="bottom: 25%; left: 5px;"></div>
+              <div class="card-edge power" style="top: 25%; left: 5px;"></div>
+            </div>
+          </div>
+          <div class="hex-socket" id="socket2">
+            <div class="diamond-accent diamond-top"></div>
+            <div class="diamond-accent diamond-left"></div></div>
+          <div class="hex-socket" id="socket3">
+            <div class="diamond-accent diamond-right"></div>
+            <div class="diamond-accent diamond-bottom"></div></div>
+          <div class="hex-socket filled" id="socket4">
+            <div class="card-name">Flame Adept</div>
+            <div class="card-type">hero</div>
+            <div class="card-edges">
+              <div class="card-edge power" style="top: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge magic" style="top: 25%; right: 5px;"></div>
+              <div class="card-edge" style="bottom: 25%; right: 5px;"></div>
+              <div class="card-edge" style="bottom: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge" style="bottom: 25%; left: 5px;"></div>
+              <div class="card-edge link" style="top: 25%; left: 5px;"></div>
+            </div>
+          </div>
+          <div class="hex-socket" id="socket5">
+            <div class="diamond-accent diamond-right"></div>
+            <div class="diamond-accent diamond-bottom"></div></div>
+          <div class="hex-socket" id="socket6"></div>
+          
+          <!-- Center forge with eye element based on reference image -->
+          <div class="hex-center">
+            <div class="center-eye"></div>
+          </div>
+        </div>
+        
+        <!-- Stats panel -->
+        <div class="stats-panel">
+          <h3 class="stats-header">Forge Progress (2/6)</h3>
+          
+          <div class="stat-row">
+            <span class="stat-label">Power</span>
+            <span class="stat-value">8</span>
+          </div>
+          
+          <div class="stat-row">
+            <span class="stat-label">Attack</span>
+            <span class="stat-value">5</span>
+          </div>
+          
+          <div class="stat-row">
+            <span class="stat-label">Defense</span>
+            <span class="stat-value">3</span>
+          </div>
+          
+          <div class="stat-row">
+            <span class="stat-label">Speed</span>
+            <span class="stat-value">2</span>
+          </div>
+          
+          <div class="stat-row">
+            <span class="stat-label">Magic</span>
+            <span class="stat-value">1</span>
+          </div>
+        </div>
+        
+        <!-- Card inventory section -->
+        <div class="card-inventory">
+          <div class="inventory-title">Available Cards</div>
+          
+          <div class="inventory-card" draggable="true" data-card-id="card1">
+            <div class="card-name">Void Mage</div>
+            <div class="card-type">caster</div>
+            <div class="card-edges">
+              <div class="card-edge magic" style="top: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge magic" style="top: 25%; right: 5px;"></div>
+              <div class="card-edge" style="bottom: 25%; right: 5px;"></div>
+              <div class="card-edge link" style="bottom: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge" style="bottom: 25%; left: 5px;"></div>
+              <div class="card-edge link" style="top: 25%; left: 5px;"></div>
+            </div>
+          </div>
+          
+          <div class="inventory-card rare" draggable="true" data-card-id="card2">
+            <div class="card-name">Crystal Sentinel</div>
+            <div class="card-type">guardian</div>
+            <div class="card-edges">
+              <div class="card-edge link" style="top: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge" style="top: 25%; right: 5px;"></div>
+              <div class="card-edge power" style="bottom: 25%; right: 5px;"></div>
+              <div class="card-edge power" style="bottom: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge link" style="bottom: 25%; left: 5px;"></div>
+              <div class="card-edge" style="top: 25%; left: 5px;"></div>
+            </div>
+          </div>
+          
+          <div class="inventory-card" draggable="true" data-card-id="card3">
+            <div class="card-name">Shadow Walker</div>
+            <div class="card-type">assassin</div>
+            <div class="card-edges">
+              <div class="card-edge" style="top: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge link" style="top: 25%; right: 5px;"></div>
+              <div class="card-edge" style="bottom: 25%; right: 5px;"></div>
+              <div class="card-edge power" style="bottom: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge magic" style="bottom: 25%; left: 5px;"></div>
+              <div class="card-edge" style="top: 25%; left: 5px;"></div>
+            </div>
+          </div>
+          
+          <div class="inventory-card epic" draggable="true" data-card-id="card4">
+            <div class="card-name">Astral Prophet</div>
+            <div class="card-type">mystic</div>
+            <div class="card-edges">
+              <div class="card-edge magic" style="top: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge magic" style="top: 25%; right: 5px;"></div>
+              <div class="card-edge link" style="bottom: 25%; right: 5px;"></div>
+              <div class="card-edge magic" style="bottom: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge link" style="bottom: 25%; left: 5px;"></div>
+              <div class="card-edge power" style="top: 25%; left: 5px;"></div>
+            </div>
+          </div>
+          
+          <div class="inventory-card" draggable="true" data-card-id="card5">
+            <div class="card-name">Iron Golem</div>
+            <div class="card-type">construct</div>
+            <div class="card-edges">
+              <div class="card-edge power" style="top: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge power" style="top: 25%; right: 5px;"></div>
+              <div class="card-edge" style="bottom: 25%; right: 5px;"></div>
+              <div class="card-edge" style="bottom: 5px; left: calc(50% - 6px);"></div>
+              <div class="card-edge power" style="bottom: 25%; left: 5px;"></div>
+              <div class="card-edge link" style="top: 25%; left: 5px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats panel -->
+        <div class="stats-panel">
+          <h3 class="stats-header">Forge Progress (2/6)</h3>
+          
+          <div class="stat-row">
+            <span class="stat-label">Power</span>
+            <span class="stat-value">8</span>
+          </div>
+          
+          <div class="stat-row">
+            <span class="stat-label">Attack</span>
+            <span class="stat-value">5</span>
+          </div>
+          
+          <div class="stat-row">
+            <span class="stat-label">Defense</span>
+            <span class="stat-value">3</span>
+          </div>
+          
+          <div class="stat-row">
+            <span class="stat-label">Speed</span>
+            <span class="stat-value">2</span>
+          </div>
+          
+          <div class="stat-row">
+            <span class="stat-label">Magic</span>
+            <span class="stat-value">1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>How the Component Works</h2>
+      <div class="sequence-container">
+        <div class="sequence-step">
+          <div class="step-title">
+            <span class="step-number">1</span>
+            Card Selection
+          </div>
+          <div class="step-description">
+            Players can select from their available cards in the inventory. Each card has unique properties, including type (hero, unit, spell, etc.), six edge types, and various tags.
+          </div>
+        </div>
+        
+        <div class="sequence-step">
+          <div class="step-title">
+            <span class="step-number">2</span>
+            Drag & Drop
+          </div>
+          <div class="step-description">
+            Cards can be dragged from the inventory and dropped into an empty socket in the forge. Keyboard users can also select and place cards using arrow keys.
+          </div>
+        </div>
+        
+        <div class="sequence-step">
+          <div class="step-title">
+            <span class="step-number">3</span>
+            Edge Connections
+          </div>
+          <div class="step-description">
+            As cards are placed, their edges connect with adjacent cards. Valid connections glow cyan, while invalid connections appear magenta.
+          </div>
+        </div>
+        
+        <div class="sequence-step">
+          <div class="step-title">
+            <span class="step-number">4</span>
+            Stats Calculation
+          </div>
+          <div class="step-description">
+            The component calculates character stats in real-time based on the cards placed, their types, edges, and the validity of connections.
+          </div>
+        </div>
+        
+        <div class="sequence-step">
+          <div class="step-title">
+            <span class="step-number">5</span>
+            Character Creation
+          </div>
+          <div class="step-description">
+            Once all six sockets have valid cards placed, the player can complete the forge to create a new character. The component generates a name and finalizes the stats.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Technical Implementation</h2>
+      <div class="demo-description">
+        <p>The component is built with React and TypeScript, using Zustand for state management. The implementation follows modern React patterns with hooks, functional components, and TypeScript for type safety.</p>
+        <p>Key technical features:</p>
+        <ul>
+          <li><strong>Drag and Drop</strong>: Using react-dnd for intuitive card placement</li>
+          <li><strong>State Management</strong>: Zustand store tracks card placement and forge state</li>
+          <li><strong>Accessibility</strong>: Full keyboard navigation support and ARIA attributes</li>
+          <li><strong>Visual Effects</strong>: CSS transitions, glows, and optional particles</li>
+          <li><strong>Responsive Design</strong>: Adapts to various screen sizes</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+  <script>
+    // Initialize the forge with drag-and-drop functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set up draggable cards using interact.js
+      interact('.inventory-card').draggable({
+        inertia: true,
+        modifiers: [
+          interact.modifiers.restrictRect({
+            restriction: 'parent',
+            endOnly: true
+          })
+        ],
+        autoScroll: true,
+        listeners: {
+          start(event) {
+            const element = event.target;
+            element.classList.add('dragging');
+            // Create a clone to leave in place
+            const clone = element.cloneNode(true);
+            clone.style.opacity = '0.4';
+            clone.style.pointerEvents = 'none';
+            element.parentNode.insertBefore(clone, element);
+            
+            // Set initial position attributes
+            element.setAttribute('data-x', 0);
+            element.setAttribute('data-y', 0);
+            
+            // Move to top of DOM for proper stacking
+            document.body.appendChild(element);
+          },
+          move(event) {
+            const target = event.target;
+            // Get current position
+            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            
+            // Update element style
+            target.style.transform = `translate(${x}px, ${y}px)`;
+            target.style.zIndex = '1000';
+            
+            // Store position
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+            
+            // Highlight drop targets when dragging over them
+            document.querySelectorAll('.hex-socket:not(.filled)').forEach(socket => {
+              const rect = socket.getBoundingClientRect();
+              const centerX = rect.left + rect.width / 2;
+              const centerY = rect.top + rect.height / 2;
+              const cursorX = event.clientX;
+              const cursorY = event.clientY;
+              
+              // Check if cursor is close to socket center
+              const distance = Math.sqrt(Math.pow(centerX - cursorX, 2) + Math.pow(centerY - cursorY, 2));
+              if (distance < rect.width / 2) {
+                socket.classList.add('dragging-over');
+              } else {
+                socket.classList.remove('dragging-over');
+              }
+            });
+          },
+          end(event) {
+            const card = event.target;
+            card.classList.remove('dragging');
+            
+            // Find if we're over a valid socket
+            const sockets = document.querySelectorAll('.hex-socket');
+            let placed = false;
+            
+            sockets.forEach(socket => {
+              if (socket.classList.contains('dragging-over') && !socket.classList.contains('filled')) {
+                // Place card in socket
+                placeCard(card, socket);
+                placed = true;
+                
+                // Update stats and check connections
+                updateStats();
+                checkConnections();
+              }
+              socket.classList.remove('dragging-over');
+            });
+            
+            // If not placed in a socket, return to inventory
+            if (!placed) {
+              // Get all cards in inventory
+              const inventory = document.querySelector('.card-inventory');
+              const allCards = document.querySelectorAll('.inventory-card:not(.placed)');
+              
+              // Reset position
+              card.style.transform = 'none';
+              card.removeAttribute('data-x');
+              card.removeAttribute('data-y');
+              
+              // Move back to inventory
+              inventory.appendChild(card);
+            }
+          }
+        }
+      });
+      
+      // Make sockets clickable to remove cards
+      document.querySelectorAll('.hex-socket.filled').forEach(socket => {
+        socket.addEventListener('click', () => {
+          // Check if socket has card content
+          const cardName = socket.querySelector('.card-name');
+          const cardType = socket.querySelector('.card-type');
+          const cardEdges = socket.querySelector('.card-edges');
+          
+          if (cardName && cardType && cardEdges) {
+            // Create a new card for the inventory
+            const card = document.createElement('div');
+            card.className = 'inventory-card';
+            card.setAttribute('draggable', 'true');
+            card.setAttribute('data-card-id', 'returned-' + Math.random().toString(36).substring(2, 9));
+            
+            // Copy card content
+            card.appendChild(cardName.cloneNode(true));
+            card.appendChild(cardType.cloneNode(true));
+            card.appendChild(cardEdges.cloneNode(true));
+            
+            // Add to inventory
+            document.querySelector('.card-inventory').appendChild(card);
+            
+            // Clear socket
+            socket.innerHTML = '';
+            socket.classList.remove('filled');
+            
+            // Update stats and connections
+            updateStats();
+            checkConnections();
+            
+            // Re-initialize drag for new card
+            interact(card).draggable({
+              /* Config from above */
+              inertia: true,
+              modifiers: [
+                interact.modifiers.restrictRect({
+                  restriction: 'parent',
+                  endOnly: true
+                })
+              ],
+              autoScroll: true
+            });
+          }
+        });
+      });
+      
+      // Function to place a card in a socket
+      function placeCard(card, socket) {
+        // Mark socket as filled
+        socket.classList.add('filled');
+        
+        // Clear socket content and add card content
+        socket.innerHTML = '';
+        
+        // Clone card content into socket
+        const cardName = card.querySelector('.card-name');
+        const cardType = card.querySelector('.card-type');
+        const cardEdges = card.querySelector('.card-edges');
+        
+        if (cardName && cardType && cardEdges) {
+          socket.appendChild(cardName.cloneNode(true));
+          socket.appendChild(cardType.cloneNode(true));
+          socket.appendChild(cardEdges.cloneNode(true));
+        }
+        
+        // Mark original card as placed and hide it
+        card.classList.add('placed');
+        card.style.display = 'none';
+        
+        // Add animation
+        socket.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+          socket.style.transform = '';
+        }, 300);
+      }
+      
+      // Function to update stats based on placed cards
+      function updateStats() {
+        // Count filled sockets
+        const filledSockets = document.querySelectorAll('.hex-socket.filled').length;
+        const statsHeader = document.querySelector('.stats-header');
+        if (statsHeader) {
+          statsHeader.textContent = `Forge Progress (${filledSockets}/6)`;
+        }
+        
+        // Recalculate stats (mock calculation)
+        const baseStats = {
+          Power: 2,
+          Attack: 3,
+          Defense: 1,
+          Speed: 1,
+          Magic: 0
+        };
+        
+        // Add stats based on filled sockets and card types
+        document.querySelectorAll('.hex-socket.filled').forEach(socket => {
+          const type = socket.querySelector('.card-type')?.textContent;
+          if (type === 'hero') {
+            baseStats.Power += 3;
+            baseStats.Attack += 1;
+          } else if (type === 'unit') {
+            baseStats.Power += 1;
+            baseStats.Defense += 1;
+          } else if (type === 'caster') {
+            baseStats.Magic += 2;
+          } else if (type === 'guardian') {
+            baseStats.Defense += 2;
+            baseStats.Power += 1;
+          } else if (type === 'assassin') {
+            baseStats.Speed += 2;
+            baseStats.Attack += 1;
+          } else if (type === 'mystic') {
+            baseStats.Magic += 3;
+          } else if (type === 'construct') {
+            baseStats.Power += 2;
+            baseStats.Defense += 2;
+          }
+        });
+        
+        // Update stat values
+        for (const [stat, value] of Object.entries(baseStats)) {
+          // Find the stat label using our custom text matching function
+          const statLabels = findElementsWithText('.stat-row .stat-label', stat);
+          if (statLabels.length > 0) {
+            const statValue = statLabels[0].nextElementSibling;
+            if (statValue) {
+              statValue.textContent = value.toString();
+            }
+          }
+        }
+      }
+      
+      // Function to check and highlight valid connections
+      function checkConnections() {
+        // Reset all connection lines and gems
+        document.querySelectorAll('.connection-line').forEach(line => {
+          line.classList.remove('active');
+        });
+        
+        document.querySelectorAll('.connection-gem').forEach(gem => {
+          gem.classList.remove('active-gem');
+        });
+        
+        // Check connections between adjacent sockets
+        const connections = [
+          { line: '#line1-2', gem: '#gem1-2', socket1: '#socket1', socket2: '#socket2' },
+          { line: '#line2-3', gem: '#gem2-3', socket1: '#socket2', socket2: '#socket3' },
+          { line: '#line3-4', gem: '#gem3-4', socket1: '#socket3', socket2: '#socket4' },
+          { line: '#line4-5', gem: '#gem4-5', socket1: '#socket4', socket2: '#socket5' },
+          { line: '#line5-6', gem: '#gem5-6', socket1: '#socket5', socket2: '#socket6' },
+          { line: '#line6-1', gem: '#gem6-1', socket1: '#socket6', socket2: '#socket1' }
+        ];
+        
+        connections.forEach(conn => {
+          const socket1 = document.querySelector(conn.socket1);
+          const socket2 = document.querySelector(conn.socket2);
+          
+          // Check if both sockets are filled
+          if (socket1?.classList.contains('filled') && socket2?.classList.contains('filled')) {
+            // Mark connection as active
+            document.querySelector(conn.line)?.classList.add('active');
+            document.querySelector(conn.gem)?.classList.add('active-gem');
+          }
+        });
+      }
+      
+      // Custom selector for text content matching
+      function findElementsWithText(selector, text) {
+        const elements = document.querySelectorAll(selector);
+        return Array.from(elements).filter(el => {
+          return el.textContent.toUpperCase().indexOf(text.toUpperCase()) >= 0;
+        });
+      }
+      
+      // Initialize connections
+      checkConnections();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+declare const styles: {
+  readonly 'forgeContainer': string;
+  readonly 'forgeArea': string;
+  readonly 'forgeSocketsContainer': string;
+  readonly 'forgeSocket': string;
+  readonly 'empty': string;
+  readonly 'focused': string;
+  readonly 'highlighted': string;
+  readonly 'hasCard': string;
+  readonly 'forgeCenter': string;
+  readonly 'forgeActive': string;
+  readonly 'particleContainer': string;
+  readonly 'particle': string;
+  readonly 'particleTrail': string;
+  readonly 'particlePulse': string;
+  readonly 'particleConnection': string;
+  readonly 'particleForge': string;
+  readonly 'particleSuccess': string;
+  readonly 'particlePlacement': string;
+  readonly 'cardPlacingAnimation': string;
+  readonly 'connectionActivating': string;
+  readonly 'forgeSuccess': string;
+  readonly 'connectionLine': string;
+  readonly 'validConnection': string;
+  readonly 'invalidConnection': string;
+  readonly 'hexCard': string;
+  readonly 'selected': string;
+  readonly 'dragging': string;
+  readonly 'hexCardName': string;
+  readonly 'hexCardType': string;
+  readonly 'cardInventory': string;
+  readonly 'forgeButton': string;
+  readonly 'forging': string;
+  readonly 'accessibilityMode': string;
+  
+  // Configuration Manager styles
+  readonly 'configManager': string;
+  readonly 'configButtons': string;
+  readonly 'configButton': string;
+  readonly 'saveButton': string;
+  readonly 'loadButton': string;
+  readonly 'exportButton': string;
+  readonly 'importButton': string;
+  readonly 'modalOverlay': string;
+  readonly 'modal': string;
+  readonly 'modalTitle': string;
+  readonly 'closeButton': string;
+  readonly 'modalContent': string;
+  readonly 'formGroup': string;
+  readonly 'textInput': string;
+  readonly 'textArea': string;
+  readonly 'modalActions': string;
+  readonly 'configList': string;
+  readonly 'configItem': string;
+  readonly 'configSelected': string;
+  readonly 'configInfo': string;
+  readonly 'configName': string;
+  readonly 'configDate': string;
+  readonly 'configActions': string;
+  readonly 'deleteButton': string;
+  readonly 'emptyMessage': string;
+  readonly 'messageOverlay': string;
+  readonly 'message': string;
+  
+  // Edge tooltip styles
+  readonly 'edgeTooltip': string;
+  readonly 'validTooltip': string;
+  readonly 'invalidTooltip': string;
+  readonly 'tooltipContent': string;
+  readonly 'edgeIcons': string;
+  readonly 'connectionSymbol': string;
+  readonly 'tooltipText': string;
+};
+
+export default styles;

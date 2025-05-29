@@ -1,0 +1,28 @@
+[
+  {
+    "id": "f4e8d3c2-b1a0-4c3e-9d8f-7e6b5c4d3a2b",
+    "name": "Archmage Zephyrius",
+    "totalPower": 24,
+    "cardIds": [
+      "d8a7ecdf-50f9-4c2f-b139-d650a50e4e36",
+      "a2c9e4b7-18d3-4f76-8e32-1dba08c56e89",
+      "5b3f9e21-c8a7-4d62-9e14-7c46fd8a0b32",
+      "7d6c5b4a-3e2d-1f0e-9d8c-7b6a5e4d3c2b",
+      "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+      "a1b2c3d4-e5f6-7a8b-9c0d-e1f2a3b4c5d6"
+    ]
+  },
+  {
+    "id": "3a4b5c6d-7e8f-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Ranger Sylvanus",
+    "totalPower": 18,
+    "cardIds": [
+      "d8a7ecdf-50f9-4c2f-b139-d650a50e4e36",
+      "5b3f9e21-c8a7-4d62-9e14-7c46fd8a0b32",
+      "7d6c5b4a-3e2d-1f0e-9d8c-7b6a5e4d3c2b",
+      "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+      "a1b2c3d4-e5f6-7a8b-9c0d-e1f2a3b4c5d6",
+      "b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e"
+    ]
+  }
+]

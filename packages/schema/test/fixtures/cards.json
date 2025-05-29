@@ -1,0 +1,29 @@
+[
+  {
+    "id": "d8a7ecdf-50f9-4c2f-b139-d650a50e4e36",
+    "name": "Arcane Guardian",
+    "type": "unit",
+    "rarity": "uncommon",
+    "edges": ["defense", "defense", "element", "skill", "attack", "link"],
+    "tags": ["guardian", "arcane"],
+    "description": "Provides +1 defense to adjacent friendly units."
+  },
+  {
+    "id": "a2c9e4b7-18d3-4f76-8e32-1dba08c56e89",
+    "name": "Flame Adept",
+    "type": "hero",
+    "rarity": "rare",
+    "edges": ["attack", "element", "element", "skill", "resource", "attack"],
+    "tags": ["fire", "caster"],
+    "description": "Can attack diagonally with reduced damage."
+  },
+  {
+    "id": "5b3f9e21-c8a7-4d62-9e14-7c46fd8a0b32",
+    "name": "Crystal Structure",
+    "type": "structure",
+    "rarity": "common",
+    "edges": ["defense", "resource", "resource", "element", "link", "defense"],
+    "tags": ["building", "energy"],
+    "description": "Generates +2 resources each turn when powered."
+  }
+]

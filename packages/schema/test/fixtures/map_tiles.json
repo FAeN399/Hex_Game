@@ -1,0 +1,34 @@
+[
+  {
+    "q": 0,
+    "r": 0,
+    "terrain": "plains",
+    "occupantId": "f4e8d3c2-b1a0-4c3e-9d8f-7e6b5c4d3a2b"
+  },
+  {
+    "q": 1,
+    "r": 0,
+    "terrain": "forest"
+  },
+  {
+    "q": 0,
+    "r": 1,
+    "terrain": "mountain"
+  },
+  {
+    "q": -1,
+    "r": 0,
+    "terrain": "water"
+  },
+  {
+    "q": 0,
+    "r": -1,
+    "terrain": "desert"
+  },
+  {
+    "q": 1,
+    "r": -1,
+    "terrain": "swamp",
+    "occupantId": "3a4b5c6d-7e8f-9a0b-1c2d-3e4f5a6b7c8d"
+  }
+]

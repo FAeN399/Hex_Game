@@ -1,4 +1,4 @@
-import { HexCard, Character, EdgeIcon } from '@hexcard/schema';
+import { HexCardType as HexCard, CharacterType as Character, EdgeIconType as EdgeIcon } from 'schema';
 
 export interface HexForgeProps {
   /**

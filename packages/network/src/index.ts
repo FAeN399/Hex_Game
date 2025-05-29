@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { NetMessage } from '../../schema/src'
+import { NetMessage } from 'schema'
 
 export const MessageSchema = NetMessage
 

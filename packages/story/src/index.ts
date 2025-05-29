@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { Character } from '../../schema/src'
+import type { CharacterType } from 'schema'
 
 // Character psychological attribute definition
 export const CharacterAttributes = z.object({
@@ -11,7 +11,7 @@ export type CharacterAttributes = z.infer<typeof CharacterAttributes>
 
 // Character profile combines base character and attributes
 export interface CharacterProfile {
-  base: Character
+  base: CharacterType
   attributes: CharacterAttributes
 }
 
@@ -75,4 +75,4 @@ export function scriptAutomaticEvents(
   return result
 }
 
-export { Character } from '../../schema/src'
+export type { CharacterType } from 'schema'

@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { generateRandomMap } from './map'
-import type { TerrainType } from '../../schema/src'
+import type { TerrainTypeObjectType } from 'schema'
 
-const grass: TerrainType = {
+const grass: TerrainTypeObjectType = {
   id: 't1',
   name: 'Grass',
   movementCost: 1,

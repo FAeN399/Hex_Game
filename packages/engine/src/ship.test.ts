@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { aggregateShipStats } from './ship'
-import type { ShipDefinition } from '../../schema/src'
+import type { ShipDefinitionType } from 'schema'
 
-const ship: ShipDefinition = {
+const ship: ShipDefinitionType = {
   id: 's1',
   name: 'Test',
   parts: [

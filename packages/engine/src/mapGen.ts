@@ -1,9 +1,9 @@
-import { MapTile, Terrain } from '../../schema/src'
+import { MapTileType, TerrainEnumType, MapTile } from 'schema'
 
 export interface MapGenOptions {
   width: number
   height: number
-  terrainWeights: Partial<Record<Terrain, number>>
+  terrainWeights: Partial<Record<TerrainEnumType, number>>
   seed?: number
   roughness?: number
   theme: 'fantasy' | 'sci-fi'
@@ -18,7 +18,7 @@ function mulberry32(a: number): () => number {
   }
 }
 
-export function generateMap(options: MapGenOptions): MapTile[] {
+export function generateMap(options: MapGenOptions): MapTileType[] {
   const {
     width,
     height,
@@ -26,7 +26,7 @@ export function generateMap(options: MapGenOptions): MapTile[] {
     seed = Date.now(),
   } = options
   const rng = mulberry32(seed)
-  const entries = Object.entries(terrainWeights) as [Terrain, number][]
+  const entries = Object.entries(terrainWeights) as [TerrainEnumType, number][]
   const total = entries.reduce((s, [, w]) => s + w, 0)
   const pick = () => {
     const r = rng() * total
@@ -37,7 +37,7 @@ export function generateMap(options: MapGenOptions): MapTile[] {
     }
     return entries[entries.length - 1][0]
   }
-  const tiles: MapTile[] = []
+  const tiles: MapTileType[] = []
   for (let r = 0; r < height; r++) {
     for (let q = 0; q < width; q++) {
       tiles.push(MapTile.parse({ q, r, terrain: pick() }))

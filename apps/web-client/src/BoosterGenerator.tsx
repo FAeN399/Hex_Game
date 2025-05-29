@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { useDeckStore } from './store'
-import { generateBooster } from '../../packages/engine/src/booster'
-import type { BoosterPack } from '../../packages/schema/src'
+import { generateBooster } from 'engine'
+import type { BoosterPackType } from 'schema'
 
 export default function BoosterGenerator() {
   const cards = useDeckStore(s => s.cards)
   const addBooster = useDeckStore(s => s.addBooster)
   const [playerId, setPlayerId] = useState('')
   const [size, setSize] = useState(6)
-  const [pack, setPack] = useState<BoosterPack | null>(null)
+  const [pack, setPack] = useState<BoosterPackType | null>(null)
 
   const handleGenerate = () => {
     const newPack = generateBooster(cards, { playerId, size })

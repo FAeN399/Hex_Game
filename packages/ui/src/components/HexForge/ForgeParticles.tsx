@@ -18,7 +18,7 @@ interface ForgeParticlesProps {
   sourcePosition?: { x: number, y: number };
   targetPosition?: { x: number, y: number };
   particleCount?: number;
-  particleType: 'connection' | 'forge' | 'placement';
+  particleType: 'connection' | 'forge' | 'placement' | 'success';
 }
 
 /**
@@ -125,7 +125,7 @@ const ForgeParticles: FC<ForgeParticlesProps> = ({
 };
 
 // Helper function to get appropriate colors for different particle types
-const getColorsForType = (type: 'connection' | 'forge' | 'placement'): string[] => {
+const getColorsForType = (type: 'connection' | 'forge' | 'placement' | 'success'): string[] => {
   switch (type) {
     case 'connection':
       return ['#4CAF50', '#8BC34A', '#CDDC39']; // Green variations
@@ -133,6 +133,8 @@ const getColorsForType = (type: 'connection' | 'forge' | 'placement'): string[] 
       return ['#F2C94C', '#F2994A', '#EB5757', '#C7A853']; // Gold/red variations
     case 'placement':
       return ['#4BC3EF', '#2D9CDB', '#56CCF2']; // Blue variations
+    case 'success':
+      return ['#22C55E', '#10B981', '#34D399']; // Success green variations
     default:
       return ['#8151B5', '#9B51E0', '#BB6BD9']; // Purple variations
   }

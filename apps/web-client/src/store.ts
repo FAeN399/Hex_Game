@@ -1,13 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { HexCard } from '../../packages/schema/src'
-import type { BoosterPack } from '../../packages/schema/src'
+import type { HexCardType } from 'schema'
+import type { BoosterPackType } from 'schema'
 
 interface DeckState {
-  cards: HexCard[]
-  boosterHistory: BoosterPack[]
-  addCard: (card: HexCard) => void
-  addBooster: (pack: BoosterPack) => void
+  cards: HexCardType[]
+  boosterHistory: BoosterPackType[]
+  addCard: (card: HexCardType) => void
+  addBooster: (pack: BoosterPackType) => void
 }
 
 export const useDeckStore = create<DeckState>()(

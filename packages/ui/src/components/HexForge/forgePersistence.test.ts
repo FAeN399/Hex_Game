@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { saveForgeConfiguration, loadForgeConfiguration } from './forgePersistence';
 import { useForgeStore } from './useForgeLogic';
-import { HexCard } from '@hexcard/schema';
+import { HexCardType as HexCard } from 'schema';
 
 // Mock local storage
 const localStorageMock = (() => {

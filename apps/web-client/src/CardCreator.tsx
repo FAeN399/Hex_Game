@@ -5,7 +5,7 @@ import {
   CardType,
   Rarity,
   HexCard as HexCardSchema
-} from '../../packages/schema/src'
+} from 'schema'
 import { useDeckStore } from './store'
 
 export default function CardCreator() {

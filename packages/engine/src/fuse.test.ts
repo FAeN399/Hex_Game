@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { fuse } from './fuse'
-import type { HexCard } from '../../schema/src'
+import type { HexCardType } from 'schema'
 
-const cards: HexCard[] = Array.from({ length: 6 }).map((_, i) => ({
+const cards: HexCardType[] = Array.from({ length: 6 }).map((_, i) => ({
   id: `c${i}`,
   name: `C${i}`,
   power: i + 1,

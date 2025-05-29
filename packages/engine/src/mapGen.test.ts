@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { generateMap } from './mapGen'
-import { Terrain } from '../../schema/src'
+import { TerrainEnumType } from 'schema'
 
 const weights = { plains: 0.6, forest: 0.4 } as const
 

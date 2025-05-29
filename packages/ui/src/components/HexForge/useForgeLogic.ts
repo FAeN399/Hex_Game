@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { create } from 'zustand';
-import { HexCard, EdgeIcon } from '@hexcard/schema';
+import { HexCardType as HexCard, EdgeIconType as EdgeIcon } from 'schema';
 import { ForgeState, CharacterStats } from './types';
 
 /**

@@ -1,20 +1,20 @@
 import { randomUUID } from 'crypto'
-import type { BoosterPack, CardType, HexCard, Rarity } from '../../schema/src'
+import type { BoosterPackType, CardTypeType, HexCardType, RarityType } from 'schema'
 
 export interface BoosterOptions {
   playerId: string
   size?: number
-  rarityDistribution?: Partial<Record<Rarity, number>>
-  allowedTypes?: CardType[]
+  rarityDistribution?: Partial<Record<RarityType, number>>
+  allowedTypes?: CardTypeType[]
   tags?: string[]
 }
 
 export function generateBooster(
-  deck: HexCard[],
+  deck: HexCardType[],
   options: BoosterOptions
-): BoosterPack {
+): BoosterPackType {
   const size = options.size ?? 6
-  const distribution: Record<Rarity, number> = {
+  const distribution: Record<RarityType, number> = {
     common: 0,
     uncommon: 0,
     rare: 0,
@@ -36,14 +36,14 @@ export function generateBooster(
     return true
   })
 
-  const byRarity: Record<Rarity, HexCard[]> = {
+  const byRarity: Record<RarityType, HexCardType[]> = {
     common: filtered.filter(c => c.rarity === 'common'),
     uncommon: filtered.filter(c => c.rarity === 'uncommon'),
     rare: filtered.filter(c => c.rarity === 'rare')
   }
 
-  const chosen: HexCard[] = []
-  for (const rarity of Object.keys(distribution) as Rarity[]) {
+  const chosen: HexCardType[] = []
+  for (const rarity of Object.keys(distribution) as RarityType[]) {
     const count = distribution[rarity]
     const pool = byRarity[rarity]
     for (let i = 0; i < count && pool.length > 0; i++) {
@@ -65,4 +65,4 @@ export function generateBooster(
   }
 }
 
-export type { BoosterPack }
+export type { BoosterPackType }

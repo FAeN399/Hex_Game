@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import EdgeTooltip from './EdgeTooltip';
-import { EdgeIcon } from '@hexcard/schema';
+import { EdgeIconType as EdgeIcon } from 'schema';
 
 describe('EdgeTooltip', () => {
   const defaultProps = {

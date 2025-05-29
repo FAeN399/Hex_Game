@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useForgeStore, isValidConnection, calculateCharacterStats } from './useForgeLogic';
-import { HexCard, EdgeIcon } from '@hexcard/schema';
+import { HexCardType as HexCard, EdgeIconType as EdgeIcon } from 'schema';
 
 describe('useForgeLogic', () => {
   // Create sample cards for testing

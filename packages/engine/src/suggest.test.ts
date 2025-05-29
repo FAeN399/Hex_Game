@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { suggestCard } from './suggest'
-import type { HexCard } from '../../schema/src'
+import type { HexCardType } from 'schema'
 
-const card = (id: string, edge: string[]): HexCard => ({
+const card = (id: string, edge: string[]): HexCardType => ({
   id,
   name: id,
   type: 'unit',
@@ -12,7 +12,7 @@ const card = (id: string, edge: string[]): HexCard => ({
 })
 
 describe('suggestCard', () => {
-  const deck: HexCard[] = [
+  const deck: HexCardType[] = [
     card('a', ['attack','attack','attack','attack','attack','attack']),
     card('b', ['defense','defense','defense','defense','defense','defense']),
     card('c', ['attack','defense','skill','resource','link','element'])

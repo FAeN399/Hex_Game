@@ -10,12 +10,17 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "zustand": "^4.5.2",
-    "zod": "^3.22.0"
+    "zod": "^3.22.0",
+    "schema": "workspace:*",
+    "engine": "workspace:*"
   },
   "devDependencies": {
     "vite": "^5.0.0",
     "vitest": "^1.0.0",
     "@vitejs/plugin-react": "^4.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "jsdom": "^26.0.0"
   }
 }

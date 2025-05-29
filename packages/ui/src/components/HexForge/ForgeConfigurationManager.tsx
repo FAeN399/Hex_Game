@@ -9,7 +9,19 @@ import {
 } from './forgePersistence';
 import styles from './styles.module.css';
 
+interface ConfigurationData {
+  enableParticles: boolean;
+  highContrastMode: boolean;
+  socketSize: number;
+  connectionThickness: number;
+  particleCount: number;
+  animationSpeed: number;
+  colorTheme: 'dark' | 'light' | 'high-contrast';
+}
+
 interface ForgeConfigurationManagerProps {
+  configuration?: ConfigurationData;
+  onConfigChange?: (newConfig: ConfigurationData) => void;
   onConfigLoaded?: () => void;
   onError?: (error: string) => void;
 }
@@ -24,6 +36,8 @@ interface SavedConfig {
  * UI component for managing forge configurations (save/load/delete)
  */
 const ForgeConfigurationManager: FC<ForgeConfigurationManagerProps> = ({
+  configuration,
+  onConfigChange,
   onConfigLoaded,
   onError
 }) => {

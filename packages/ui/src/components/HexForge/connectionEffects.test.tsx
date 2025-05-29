@@ -110,7 +110,6 @@ describe('Connection Effects', () => {
         isActive={true}
         sourcePosition={{ x: 100, y: 100 }}
         particleType="connection"
-        pattern="radial"
         particleCount={5}
       />
     );
@@ -120,7 +119,6 @@ describe('Connection Effects', () => {
         isActive={true}
         sourcePosition={{ x: 100, y: 100 }}
         particleType="connection"
-        pattern="spiral"
         particleCount={5}
       />
     );

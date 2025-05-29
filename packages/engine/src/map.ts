@@ -1,15 +1,15 @@
-import type { TerrainType, Theme } from '../../schema/src'
+import type { TerrainTypeObjectType, ThemeType } from 'schema'
 
 export interface HexTile {
   q: number
   r: number
-  terrain: TerrainType
+  terrain: TerrainTypeObjectType
   elevation?: number
   tags?: string[]
 }
 
 export interface TerrainDistribution {
-  type: TerrainType
+  type: TerrainTypeObjectType
   weight: number
 }
 
@@ -17,7 +17,7 @@ export interface RandomMapOptions {
   width: number
   height: number
   terrains: TerrainDistribution[]
-  theme?: Theme
+  theme?: ThemeType
 }
 
 export function generateRandomMap(opts: RandomMapOptions): HexTile[][] {
@@ -25,7 +25,7 @@ export function generateRandomMap(opts: RandomMapOptions): HexTile[][] {
     ? opts.terrains.filter(t => t.type.theme === opts.theme)
     : opts.terrains
   const total = pool.reduce((sum, t) => sum + t.weight, 0)
-  const choose = (): TerrainType => {
+  const choose = (): TerrainTypeObjectType => {
     const r = Math.random() * total
     let acc = 0
     for (const item of pool) {

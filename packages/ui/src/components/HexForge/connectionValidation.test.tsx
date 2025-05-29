@@ -3,7 +3,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { HexForge } from './index';
 import { useForgeStore, isValidConnection } from './useForgeLogic';
-import { HexCard } from '@hexcard/schema';
+import { HexCardType as HexCard } from 'schema';
 
 // Mock react-dnd
 vi.mock('react-dnd', () => ({

@@ -26,6 +26,71 @@ declare const styles: {
   readonly 'forgeButton': string;
   readonly 'forging': string;
   readonly 'accessibilityMode': string;
+  // Configuration manager styles
+  readonly 'configManager': string;
+  readonly 'configButtons': string;
+  readonly 'configButton': string;
+  readonly 'saveButton': string;
+  readonly 'loadButton': string;
+  readonly 'exportButton': string;
+  readonly 'importButton': string;
+  readonly 'modalOverlay': string;
+  readonly 'modal': string;
+  readonly 'closeButton': string;
+  readonly 'modalTitle': string;
+  readonly 'modalContent': string;
+  readonly 'formGroup': string;
+  readonly 'textInput': string;
+  readonly 'textArea': string;
+  readonly 'modalActions': string;
+  readonly 'configList': string;
+  readonly 'configItem': string;
+  readonly 'configInfo': string;
+  readonly 'configName': string;
+  readonly 'configDate': string;
+  readonly 'deleteButton': string;
+  readonly 'emptyMessage': string;
+  // Forge UI styles
+  readonly 'hexForgeContainer': string;
+  readonly 'socketsContainer': string;
+  readonly 'forgeEye': string;
+  readonly 'tempMessage': string;
+  readonly 'success': string;
+  readonly 'error': string;
+  readonly 'info': string;
+  readonly 'availableCards': string;
+  readonly 'actionButtons': string;
+  readonly 'resetButton': string;
+  // Edge and tooltip styles
+  readonly 'edgeIcons': string;
+  readonly 'edgeIcon': string;
+  readonly 'edgeTooltip': string;
+  readonly 'validTooltip': string;
+  readonly 'invalidTooltip': string;
+  readonly 'tooltipContent': string;
+  readonly 'connectionSymbol': string;
+  readonly 'tooltipText': string;
+  // Stats and forge result styles
+  readonly 'statsPanel': string;
+  readonly 'statsHeader': string;
+  readonly 'statRow': string;
+  readonly 'statLabel': string;
+  readonly 'statValue': string;
+  readonly 'abilitiesList': string;
+  readonly 'abilityItem': string;
+  readonly 'forgeButtonContainer': string;
+  readonly 'readyToForge': string;
+  // Socket and card styles
+  readonly 'dropTarget': string;
+  readonly 'hexCardInSocket': string;
+  readonly 'emptySocketIndicator': string;
+  // Edge type styles
+  readonly 'link': string;
+  readonly 'attack': string;
+  readonly 'defense': string;
+  readonly 'skill': string;
+  readonly 'resource': string;
+  readonly 'element': string;
 };
 
 export default styles;

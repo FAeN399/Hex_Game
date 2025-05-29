@@ -34,7 +34,15 @@ export const HexCard = z.object({
   ]),
   tags: z.array(z.string()).default([]),
   description: z.string().optional(),
-  image: z.string().url().optional()
+  image: z.string().url().optional(),
+  stats: z.object({
+    attack: z.number().optional(),
+    defense: z.number().optional(),
+    speed: z.number().optional(),
+    magic: z.number().optional()
+  }).optional(),
+  abilities: z.array(z.string()).optional(),
+  artwork: z.string().optional()
 })
 
 export const BoosterPack = z.object({
@@ -126,38 +134,20 @@ export const NetMessage = z.object({
   seq: z.number().int()
 })
 
-export type EdgeIcon = z.infer<typeof EdgeIcon>
-export type CardType = z.infer<typeof CardType>
-export type Rarity = z.infer<typeof Rarity>
-export type HexCard = z.infer<typeof HexCard>
-export type BoosterPack = z.infer<typeof BoosterPack>
-export type Theme = z.infer<typeof Theme>
-export type TerrainType = z.infer<typeof TerrainType>
-export type StructureType = z.infer<typeof StructureType>
-export type ShipPartType = z.infer<typeof ShipPartType>
-export type ShipPart = z.infer<typeof ShipPart>
-export type ShipDefinition = z.infer<typeof ShipDefinition>
-export type Character = z.infer<typeof Character>
-export type Ship = z.infer<typeof Ship>
-export type Terrain = z.infer<typeof Terrain>
-export type MapTile = z.infer<typeof MapTile>
-export type NetMessage = z.infer<typeof NetMessage>
-
-export {
-  EdgeIcon,
-  CardType,
-  Rarity,
-  HexCard,
-  BoosterPack,
-  Theme,
-  Terrain,
-  TerrainType,
-  StructureType,
-  ShipPartType,
-  ShipPart,
-  ShipDefinition,
-  Character,
-  Ship,
-  MapTile,
-  NetMessage
-}
+// Type exports
+export type EdgeIconType = z.infer<typeof EdgeIcon>
+export type CardTypeType = z.infer<typeof CardType>
+export type RarityType = z.infer<typeof Rarity>
+export type HexCardType = z.infer<typeof HexCard>
+export type BoosterPackType = z.infer<typeof BoosterPack>
+export type ThemeType = z.infer<typeof Theme>
+export type TerrainTypeObjectType = z.infer<typeof TerrainType>
+export type StructureTypeObjectType = z.infer<typeof StructureType>
+export type ShipPartTypeEnumType = z.infer<typeof ShipPartType>
+export type ShipPartObjectType = z.infer<typeof ShipPart>
+export type ShipDefinitionType = z.infer<typeof ShipDefinition>
+export type CharacterType = z.infer<typeof Character>
+export type ShipObjectType = z.infer<typeof Ship>
+export type TerrainEnumType = z.infer<typeof Terrain>
+export type MapTileType = z.infer<typeof MapTile>
+export type NetMessageType = z.infer<typeof NetMessage>

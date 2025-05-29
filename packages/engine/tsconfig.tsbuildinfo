@@ -1,0 +1,1 @@
+{"root":["./src/booster.test.ts","./src/booster.ts","./src/forge.test.ts","./src/fuse.test.ts","./src/fuse.ts","./src/index.ts","./src/map.test.ts","./src/map.ts","./src/mapgen.test.ts","./src/mapgen.ts","./src/ship.test.ts","./src/ship.ts","./src/suggest.test.ts","./src/suggest.ts","./src/turn.test.ts","./src/turn.ts"],"version":"5.8.3"}

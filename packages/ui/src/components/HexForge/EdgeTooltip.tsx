@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { EdgeIcon } from '@hexcard/schema';
+import { EdgeIconType as EdgeIcon } from 'schema';
 import styles from './styles.module.css';
 
 interface EdgeTooltipProps {

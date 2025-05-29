@@ -34,6 +34,9 @@ packages/
   schema/           # Zod data models
   engine/           # Pure game logic (forge, turn state machine)
   ui/               # Shared UI components
+  story/            # Narrative event generator
+apps/
+  session-manager/  # CLI for session transitions
 ```
 
 Additional documentation lives in the `docs/` folder.
@@ -43,6 +46,11 @@ On the Forge screen you can click **Suggest Card** to let the engine recommend a
 card from your collection that best matches the edges of the cards you've
 already placed. This feature is optional and doesn't modify your selection until
 you choose to use the suggested card.
+
+### Story Events Between Sessions
+The `story` package introduces psychological attributes that drive automatic
+narrative scenes between weekly games. Use the `session-manager` CLI to input a
+scenario and players' choices, then receive a short script of generated events.
 
 ## Contributing
 

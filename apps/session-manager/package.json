@@ -1,0 +1,17 @@
+{
+  "name": "session-manager",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "tsc -b",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "story": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^1.4.0"
+  }
+}

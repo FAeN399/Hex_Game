@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useCharacterForgeStore } from './characterForgeStore'
 import type { HexCard } from './forgeSchema'
 import type { Slot } from './forgeLogic'
 import { ForgedHeroSchema } from './forgeSchema'
+import { suggestCard } from '@hexcard/engine'
 
 interface CharacterForgeProps {
   availableCards: HexCard[]
@@ -82,6 +84,7 @@ export default function CharacterForge({ availableCards, onForge }: CharacterFor
   const setCard = useCharacterForgeStore((s) => s.setCard)
   const finalStats = useCharacterForgeStore((s) => s.finalStats)
   const classLabel = useCharacterForgeStore((s) => s.classLabel)
+  const [suggested, setSuggested] = useState<HexCard | null>(null)
 
   const handleForge = () => {
     const hero = {
@@ -98,6 +101,11 @@ export default function CharacterForge({ availableCards, onForge }: CharacterFor
     }
   }
 
+  const handleSuggest = () => {
+    const suggestion = suggestCard(Object.values(equipped), availableCards as any)
+    setSuggested(suggestion)
+  }
+
   return (
     <div className="p-4">
       <input className="border p-1 mb-2" value={name} onChange={(e) => setName(e.target.value)} placeholder="Hero name" />
@@ -108,7 +116,15 @@ export default function CharacterForge({ availableCards, onForge }: CharacterFor
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-gray-700" />
       </div>
       <StatPreview />
-      <ForgeButton onForge={handleForge} />
+      <div className="flex gap-2 justify-center">
+        <ForgeButton onForge={handleForge} />
+        <button onClick={handleSuggest} className="mt-4 px-4 py-2 rounded bg-blue-500 text-white">
+          Suggest Card
+        </button>
+      </div>
+      {suggested && (
+        <div className="text-center mt-2 text-sm" data-testid="suggestion">Suggested: {suggested.name}</div>
+      )}
       <div className="flex flex-wrap mt-4">
         {availableCards.map((c) => (
           <CardPreview key={c.id} card={c} />

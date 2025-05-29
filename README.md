@@ -9,24 +9,40 @@ A dark-themed, arcane-tech card and map strategy game that combines tactical gam
 - Dark theme with arcane aesthetics
 - Modern UI components with responsive design
 - Rich lore and immersive world-building
+- Optional AI card suggestion in the forge screen
 
 ## Getting Started
 
 ### Prerequisites
-- Python 3.8 or higher
-- PySide6/PyQt6 for desktop application
+- Node.js 18+
+- pnpm package manager (`npm install -g pnpm`)
 - Modern web browser for web components
 
 ### Installation
 1. Clone the repository
-2. Install dependencies
-3. Follow the setup instructions in the documentation
+2. Install dependencies using `pnpm install`
+3. Start the web client with `pnpm dev:web` or the desktop app with `pnpm dev:desktop`
+4. Run all tests with `pnpm test`
 
 ## Project Structure
 
-- `UI_in_HTML.html` - UI style guide and component library
-- `UI_INTEGRATION_PLAN.md` - Implementation plan for desktop app
-- Additional documentation and source files
+```
+apps/
+  web-client/       # React + Vite front end
+  desktop-studio/   # Tauri wrapper for desktop
+packages/
+  schema/           # Zod data models
+  engine/           # Pure game logic (forge, turn state machine)
+  ui/               # Shared UI components
+```
+
+Additional documentation lives in the `docs/` folder.
+
+### AI Card Suggestion
+On the Forge screen you can click **Suggest Card** to let the engine recommend a
+card from your collection that best matches the edges of the cards you've
+already placed. This feature is optional and doesn't modify your selection until
+you choose to use the suggested card.
 
 ## Contributing
 

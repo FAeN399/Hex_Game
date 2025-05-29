@@ -15,7 +15,10 @@ export interface Character {
 
 /**
  * Combine six cards into a new character.
- * Total power is the sum of card power values.
+ *
+ * @param cards - exactly six cards to fuse
+ * @param name  - the resulting character name
+ * @returns the forged character with aggregated power
  */
 export function forgeCharacter(cards: HexCard[], name: string): Character {
   if (cards.length !== 6) {
@@ -32,3 +35,5 @@ export function forgeCharacter(cards: HexCard[], name: string): Character {
 
 export { generateBooster } from './booster'
 export { fuse } from './fuse'
+export { nextPhase, Phase } from './turn'
+export { suggestCard } from './suggest'

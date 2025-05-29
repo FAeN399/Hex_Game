@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<!--
+  Basic HexCard Forge Demo - Simplified Interactive Demo
+  
+  This demo showcases the basic forge functionality:
+  - Simple card placement workflow
+  - Basic stats calculation
+  - Clear visual feedback
+  - Minimal complexity for easy understanding
+  
+  Perfect for first-time users and documentation
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HexCard Forge - Basic Demo</title>
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Simplified color palette */
+      --bg-primary: #0E0815;
+      --bg-secondary: #1C0A2D;
+      --bg-tertiary: #372549;
+      --accent-cyan: #5CE1E6;
+      --accent-gold: #F2C94C;
+      --accent-red: #E85B9E;
+      --text-primary: #E0D7FF;
+      --text-secondary: #B886DD;
+      --socket-empty: #AFD4E8;
+      --socket-filled: #70A4C4;
+      --connection-active: #4CAF50;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 2.5rem;
+      color: var(--accent-cyan);
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(92, 225, 230, 0.5);
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }    .demo-layout {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: center;
+      justify-items: center;
+    }.forge-area {
+      background: var(--bg-secondary);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      width: 600px;
+      height: calc(600px * 1.1547);
+      padding: 40px 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .hex-forge {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      margin: 0 auto 40px;
+    }
+
+    .socket {
+      position: absolute;
+      width: 80px;
+      height: 92px;
+      background: var(--socket-empty);
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      border: 3px solid var(--accent-cyan);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-size: 0.8rem;
+      text-align: center;
+      color: var(--bg-primary);
+      font-weight: 600;
+    }
+
+    .socket:hover {
+      transform: scale(1.05);
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 20px var(--accent-gold);
+    }
+
+    .socket.filled {
+      background: var(--socket-filled);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px var(--accent-cyan);
+    }
+
+    .socket.drop-target {
+      border-color: var(--accent-gold);
+      background: rgba(242, 201, 76, 0.2);
+      transform: scale(1.1);
+    }
+
+    /* Socket positions in hexagonal arrangement */
+    .socket:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
+    .socket:nth-child(2) { top: 25%; right: 0; }
+    .socket:nth-child(3) { bottom: 25%; right: 0; }
+    .socket:nth-child(4) { bottom: 0; left: 50%; transform: translateX(-50%); }
+    .socket:nth-child(5) { bottom: 25%; left: 0; }
+    .socket:nth-child(6) { top: 25%; left: 0; }
+
+    .center-eye {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-gold) 0%, #D99000 100%);
+      box-shadow: 0 0 25px rgba(242, 201, 76, 0.8);
+      animation: pulse 3s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 15px rgba(242, 201, 76, 0.6); }
+      50% { box-shadow: 0 0 30px rgba(242, 201, 76, 1); }
+    }
+
+    .connections {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .connection-line {
+      position: absolute;
+      height: 3px;
+      background: var(--connection-active);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      box-shadow: 0 0 8px var(--connection-active);
+    }
+
+    .connection-line.active {
+      opacity: 1;
+    }    .card-inventory {
+      background: var(--bg-tertiary);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      width: 300px;
+      height: calc(300px * 1.1547);
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .inventory-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      margin-bottom: 20px;
+      text-align: center;
+    }    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      justify-items: center;
+      width: 100%;
+    }.card {
+      width: 120px;
+      height: calc(120px * 1.1547);
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+      border: 2px solid var(--accent-cyan);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      padding: 15px 8px;
+      cursor: grab;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-gold);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .card.dragging {
+      opacity: 0.5;
+      transform: rotate(5deg);
+    }
+
+    .card.placed {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .card-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+    }
+
+    .card-type {
+      font-size: 0.8rem;
+      color: var(--accent-gold);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-power {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }    .stats-panel {
+      background: var(--bg-tertiary);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      width: 300px;
+      height: calc(300px * 1.1547);
+      padding: 20px 10px;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .stats-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(92, 225, 230, 0.2);
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: var(--text-primary);
+    }    .instructions {
+      background: rgba(92, 225, 230, 0.1);
+      border: 1px solid var(--accent-cyan);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      width: 400px;
+      height: calc(400px * 1.1547);
+      padding: 20px 10px;
+      margin: 0 auto 20px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }    .progress-bar {
+      width: 300px;
+      height: calc(300px * 0.2);
+      background: var(--bg-secondary);
+      clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+      margin: 15px auto;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent-gold) 100%);
+      width: 0%;
+      transition: width 0.5s ease;
+    }    @media (max-width: 768px) {
+      .demo-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .forge-area {
+        width: 400px;
+        height: calc(400px * 1.1547);
+        padding: 30px 15px;
+      }
+      
+      .hex-forge {
+        width: 300px;
+        height: 300px;
+      }
+      
+      .socket {
+        width: 60px;
+        height: 69px;
+      }
+      
+      .center-eye {
+        width: 45px;
+        height: 45px;
+      }
+      
+      .card-inventory {
+        width: 250px;
+        height: calc(250px * 1.1547);
+        padding: 15px 8px;
+      }
+      
+      .stats-panel {
+        width: 250px;
+        height: calc(250px * 1.1547);
+        padding: 15px 8px;
+      }
+      
+      .instructions {
+        width: 300px;
+        height: calc(300px * 1.1547);
+        padding: 15px 8px;
+        font-size: 0.8rem;
+      }
+      
+      .card {
+        width: 100px;
+        height: calc(100px * 1.1547);
+        padding: 12px 6px;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>HexCard Forge</h1>
+      <p class="subtitle">Basic Interactive Demo - Drag cards to forge sockets</p>
+    </header>
+
+    <div class="demo-layout">
+      <div class="forge-area">
+        <div class="instructions">
+          <strong>How to use:</strong> Drag cards from the inventory on the right into the hexagonal sockets. Watch as connections form and stats update in real-time.
+        </div>
+
+        <div class="hex-forge">
+          <div class="socket" data-socket="0">Empty</div>
+          <div class="socket" data-socket="1">Empty</div>
+          <div class="socket" data-socket="2">Empty</div>
+          <div class="socket" data-socket="3">Empty</div>
+          <div class="socket" data-socket="4">Empty</div>
+          <div class="socket" data-socket="5">Empty</div>
+          <div class="center-eye"></div>
+          
+          <div class="connections">
+            <div class="connection-line" data-connection="0-1"></div>
+            <div class="connection-line" data-connection="1-2"></div>
+            <div class="connection-line" data-connection="2-3"></div>
+            <div class="connection-line" data-connection="3-4"></div>
+            <div class="connection-line" data-connection="4-5"></div>
+            <div class="connection-line" data-connection="5-0"></div>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress"></div>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="card-inventory">
+          <div class="inventory-title">Available Cards</div>
+          <div class="card-grid">
+            <div class="card" data-card-type="warrior" data-power="3">
+              <div class="card-name">Steel Knight</div>
+              <div class="card-type">Warrior</div>
+              <div class="card-power">Power: 3</div>
+            </div>
+            
+            <div class="card" data-card-type="mage" data-power="2">
+              <div class="card-name">Fire Mage</div>
+              <div class="card-type">Mage</div>
+              <div class="card-power">Power: 2</div>
+            </div>
+            
+            <div class="card" data-card-type="rogue" data-power="2">
+              <div class="card-name">Shadow Thief</div>
+              <div class="card-type">Rogue</div>
+              <div class="card-power">Power: 2</div>
+            </div>
+            
+            <div class="card" data-card-type="healer" data-power="1">
+              <div class="card-name">Light Cleric</div>
+              <div class="card-type">Healer</div>
+              <div class="card-power">Power: 1</div>
+            </div>
+            
+            <div class="card" data-card-type="tank" data-power="4">
+              <div class="card-name">Stone Guardian</div>
+              <div class="card-type">Tank</div>
+              <div class="card-power">Power: 4</div>
+            </div>
+            
+            <div class="card" data-card-type="archer" data-power="2">
+              <div class="card-name">Wind Archer</div>
+              <div class="card-type">Archer</div>
+              <div class="card-power">Power: 2</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-panel">
+          <div class="stats-title">Character Stats</div>
+          <div class="stat-row">
+            <span class="stat-label">Total Power</span>
+            <span class="stat-value" id="total-power">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Cards Placed</span>
+            <span class="stat-value" id="cards-placed">0 / 6</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Connections</span>
+            <span class="stat-value" id="connections">0 / 6</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Completion</span>
+            <span class="stat-value" id="completion">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Game state
+    let gameState = {
+      sockets: [null, null, null, null, null, null],
+      totalPower: 0,
+      placedCards: 0,
+      activeConnections: 0
+    };
+
+    // Initialize drag and drop
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeDragAndDrop();
+      updateStats();
+      updateConnections();
+    });
+
+    function initializeDragAndDrop() {
+      // Make cards draggable
+      interact('.card:not(.placed)').draggable({
+        inertia: true,
+        modifiers: [
+          interact.modifiers.restrictRect({
+            restriction: 'parent',
+            endOnly: true
+          })
+        ],
+        autoScroll: true,
+        listeners: {
+          start(event) {
+            const element = event.target;
+            element.classList.add('dragging');
+            
+            // Highlight drop targets
+            document.querySelectorAll('.socket:not(.filled)').forEach(socket => {
+              socket.classList.add('drop-target');
+            });
+          },
+          move(event) {
+            const target = event.target;
+            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            
+            target.style.transform = `translate(${x}px, ${y}px)`;
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+          },
+          end(event) {
+            const element = event.target;
+            element.classList.remove('dragging');
+            
+            // Remove drop target highlights
+            document.querySelectorAll('.socket').forEach(socket => {
+              socket.classList.remove('drop-target');
+            });
+            
+            // Reset position if not dropped on valid target
+            setTimeout(() => {
+              if (!element.classList.contains('placed')) {
+                element.style.transform = '';
+                element.removeAttribute('data-x');
+                element.removeAttribute('data-y');
+              }
+            }, 100);
+          }
+        }
+      });
+
+      // Make sockets drop targets
+      interact('.socket:not(.filled)').dropzone({
+        accept: '.card',
+        overlap: 0.5,
+        ondragenter(event) {
+          event.target.classList.add('drop-target');
+        },
+        ondragleave(event) {
+          event.target.classList.remove('drop-target');
+        },
+        ondrop(event) {
+          const socket = event.target;
+          const card = event.relatedTarget;
+          const socketIndex = parseInt(socket.dataset.socket);
+          
+          placeCard(card, socket, socketIndex);
+        }
+      });
+    }
+
+    function placeCard(card, socket, socketIndex) {
+      const cardType = card.dataset.cardType;
+      const cardPower = parseInt(card.dataset.cardPower);
+      const cardName = card.querySelector('.card-name').textContent;
+      
+      // Update game state
+      gameState.sockets[socketIndex] = {
+        type: cardType,
+        power: cardPower,
+        name: cardName
+      };
+      
+      // Update UI
+      socket.innerHTML = `<div style="font-size: 0.7rem; text-align: center;"><div>${cardName}</div><div style="color: var(--accent-gold);">${cardType}</div></div>`;
+      socket.classList.add('filled');
+      socket.classList.remove('drop-target');
+      
+      // Mark card as placed
+      card.classList.add('placed');
+      card.style.transform = '';
+      card.removeAttribute('data-x');
+      card.removeAttribute('data-y');
+      
+      // Update stats and connections
+      updateStats();
+      updateConnections();
+      
+      // Add placement animation
+      socket.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        socket.style.transform = '';
+      }, 300);
+    }
+
+    function updateStats() {
+      const placedCards = gameState.sockets.filter(socket => socket !== null).length;
+      const totalPower = gameState.sockets.reduce((sum, socket) => {
+        return sum + (socket ? socket.power : 0);
+      }, 0);
+      
+      gameState.placedCards = placedCards;
+      gameState.totalPower = totalPower;
+      
+      // Update UI
+      document.getElementById('total-power').textContent = totalPower;
+      document.getElementById('cards-placed').textContent = `${placedCards} / 6`;
+      document.getElementById('completion').textContent = `${Math.round((placedCards / 6) * 100)}%`;
+      
+      // Update progress bar
+      const progressFill = document.getElementById('progress');
+      progressFill.style.width = `${(placedCards / 6) * 100}%`;
+    }
+
+    function updateConnections() {
+      let activeConnections = 0;
+      const connectionLines = document.querySelectorAll('.connection-line');
+      
+      // Check each connection
+      for (let i = 0; i < 6; i++) {
+        const nextIndex = (i + 1) % 6;
+        const line = document.querySelector(`[data-connection="${i}-${nextIndex}"]`);
+        
+        if (gameState.sockets[i] && gameState.sockets[nextIndex]) {
+          line.classList.add('active');
+          activeConnections++;
+        } else {
+          line.classList.remove('active');
+        }
+      }
+      
+      gameState.activeConnections = activeConnections;
+      document.getElementById('connections').textContent = `${activeConnections} / 6`;
+      
+      // Position connection lines
+      positionConnectionLines();
+    }
+
+    function positionConnectionLines() {
+      const forge = document.querySelector('.hex-forge');
+      const sockets = document.querySelectorAll('.socket');
+      
+      for (let i = 0; i < 6; i++) {
+        const nextIndex = (i + 1) % 6;
+        const line = document.querySelector(`[data-connection="${i}-${nextIndex}"]`);
+        
+        if (line && sockets[i] && sockets[nextIndex]) {
+          const socket1Rect = sockets[i].getBoundingClientRect();
+          const socket2Rect = sockets[nextIndex].getBoundingClientRect();
+          const forgeRect = forge.getBoundingClientRect();
+          
+          const x1 = socket1Rect.left + socket1Rect.width / 2 - forgeRect.left;
+          const y1 = socket1Rect.top + socket1Rect.height / 2 - forgeRect.top;
+          const x2 = socket2Rect.left + socket2Rect.width / 2 - forgeRect.left;
+          const y2 = socket2Rect.top + socket2Rect.height / 2 - forgeRect.top;
+          
+          const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+          const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+          
+          line.style.left = `${x1}px`;
+          line.style.top = `${y1}px`;
+          line.style.width = `${length}px`;
+          line.style.transform = `rotate(${angle}deg)`;
+          line.style.transformOrigin = '0 50%';
+        }
+      }
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      setTimeout(positionConnectionLines, 100);
+    });
+  </script>
+</body>
+</html>

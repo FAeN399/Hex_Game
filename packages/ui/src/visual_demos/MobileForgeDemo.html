@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>HexCard Forge - Mobile Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .mobile-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .mobile-header h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #4fc3f7;
+        }
+
+        .mobile-container {
+            padding: 10px;
+            max-width: 100vw;
+            overflow: hidden;
+        }
+
+        .forge-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #81c784;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .mobile-forge {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            grid-template-rows: 80px 80px 80px;
+            gap: 10px;
+            max-width: 280px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .forge-socket {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(45deg, #2196f3, #21cbf3);
+            border: 3px solid #4fc3f7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .forge-socket:nth-child(1) { grid-area: 1 / 2 / 2 / 3; } /* Top */
+        .forge-socket:nth-child(2) { grid-area: 2 / 1 / 3 / 2; } /* Top-left */
+        .forge-socket:nth-child(3) { grid-area: 2 / 3 / 3 / 4; } /* Top-right */
+        .forge-socket:nth-child(4) { grid-area: 3 / 1 / 4 / 2; } /* Bottom-left */
+        .forge-socket:nth-child(5) { grid-area: 3 / 3 / 4 / 4; } /* Bottom-right */
+        .forge-socket:nth-child(6) { grid-area: 4 / 2 / 5 / 3; } /* Bottom */
+
+        .forge-center {
+            grid-area: 2 / 2 / 3 / 3;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #ffd700, #ffb300);
+            border: 3px solid #ff6f00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 10;
+        }
+
+        .forge-socket.has-card {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            border-color: #81c784;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .forge-socket.drop-target {
+            background: linear-gradient(45deg, #ff9800, #ffb74d);
+            border-color: #ffc107;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .card-inventory {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mobile-card {
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+            border: 2px solid #ba68c8;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .mobile-card:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+            z-index: 1000;
+        }
+
+        .mobile-card.dragging {
+            opacity: 0.8;
+            transform: scale(1.1) rotate(5deg);
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .mobile-card.used {
+            opacity: 0.3;
+            pointer-events: none;
+            filter: grayscale(100%);
+        }
+
+        .card-name {
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        .card-type {
+            font-size: 0.6rem;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        .card-power {
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+        }
+
+        .mobile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #4fc3f7;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #81c784);
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .mobile-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .mobile-btn {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(45deg, #2196f3, #21cbf3);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+
+        .mobile-btn:active {
+            transform: scale(0.95);
+            background: linear-gradient(45deg, #1976d2, #0288d1);
+        }
+
+        .mobile-btn.reset {
+            background: linear-gradient(45deg, #f44336, #ef5350);
+        }
+
+        .mobile-btn.reset:active {
+            background: linear-gradient(45deg, #d32f2f, #c62828);
+        }
+
+        .connection-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .connection-line {
+            stroke: #4caf50;
+            stroke-width: 3;
+            opacity: 0.7;
+            filter: drop-shadow(0 0 5px #4caf50);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .haptic-feedback {
+            animation: haptic 0.1s ease;
+        }
+
+        @keyframes haptic {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Touch-friendly spacing */
+        @media (max-width: 360px) {
+            .mobile-forge {
+                max-width: 240px;
+                gap: 8px;
+            }
+            
+            .forge-socket {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .forge-center {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-header">
+        <h1>🔥 HexCard Forge Mobile</h1>
+    </div>
+
+    <div class="mobile-container">
+        <div class="forge-section">
+            <div class="section-title">⚡ Forge Arena</div>
+            <div class="mobile-forge" id="mobileForge">
+                <svg class="connection-lines" id="connectionLines">
+                    <!-- Connection lines will be drawn here -->
+                </svg>
+                <div class="forge-socket" data-socket="0">1</div>
+                <div class="forge-socket" data-socket="1">2</div>
+                <div class="forge-socket" data-socket="2">3</div>
+                <div class="forge-socket" data-socket="3">4</div>
+                <div class="forge-socket" data-socket="4">5</div>
+                <div class="forge-socket" data-socket="5">6</div>
+                <div class="forge-center">👁️</div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar">0%</div>
+            </div>
+        </div>
+
+        <div class="forge-section">
+            <div class="section-title">📊 Forge Stats</div>
+            <div class="mobile-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalPower">0</span>
+                    <div class="stat-label">Total Power</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="cardsPlaced">0</span>
+                    <div class="stat-label">Cards Placed</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="connections">0</span>
+                    <div class="stat-label">Connections</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="multiplier">1.0x</span>
+                    <div class="stat-label">Multiplier</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="forge-section">
+            <div class="section-title">🎴 Card Inventory</div>
+            <div class="card-inventory" id="cardInventory">
+                <!-- Cards will be populated by JavaScript -->
+            </div>
+            
+            <div class="mobile-controls">
+                <button class="mobile-btn" id="autoPlaceBtn">🎯 Auto Place</button>
+                <button class="mobile-btn reset" id="resetBtn">🔄 Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        class MobileForgeDemo {
+            constructor() {
+                this.sockets = Array(6).fill(null);
+                this.cards = [
+                    { id: 1, name: 'Fire Knight', type: 'Warrior', power: 85, element: 'fire' },
+                    { id: 2, name: 'Ice Mage', type: 'Mage', power: 75, element: 'ice' },
+                    { id: 3, name: 'Earth Guardian', type: 'Tank', power: 90, element: 'earth' },
+                    { id: 4, name: 'Wind Archer', type: 'Archer', power: 70, element: 'wind' },
+                    { id: 5, name: 'Light Healer', type: 'Healer', power: 65, element: 'light' },
+                    { id: 6, name: 'Shadow Rogue', type: 'Rogue', power: 80, element: 'dark' },
+                ];
+                this.usedCards = new Set();
+                this.draggedCard = null;
+                this.dropTarget = null;
+
+                this.init();
+            }
+
+            init() {
+                this.createCards();
+                this.setupEventListeners();
+                this.updateStats();
+            }
+
+            createCards() {
+                const inventory = document.getElementById('cardInventory');
+                inventory.innerHTML = '';
+
+                this.cards.forEach(card => {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'mobile-card';
+                    cardElement.dataset.cardId = card.id;
+                    cardElement.innerHTML = `
+                        <div class="card-power">${card.power}</div>
+                        <div class="card-name">${card.name}</div>
+                        <div class="card-type">${card.type}</div>
+                    `;
+
+                    // Touch events for drag and drop
+                    cardElement.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+                    cardElement.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+                    cardElement.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
+
+                    inventory.appendChild(cardElement);
+                });
+            }
+
+            setupEventListeners() {
+                // Socket event listeners
+                document.querySelectorAll('.forge-socket').forEach(socket => {
+                    socket.addEventListener('touchstart', this.handleSocketTouch.bind(this));
+                });
+
+                // Button event listeners
+                document.getElementById('autoPlaceBtn').addEventListener('click', this.autoPlace.bind(this));
+                document.getElementById('resetBtn').addEventListener('click', this.reset.bind(this));
+            }
+
+            handleTouchStart(e) {
+                e.preventDefault();
+                const card = e.target.closest('.mobile-card');
+                if (!card || this.usedCards.has(parseInt(card.dataset.cardId))) return;
+
+                this.draggedCard = card;
+                card.classList.add('dragging');
+                this.addHapticFeedback();
+                
+                // Highlight available sockets
+                this.highlightAvailableSockets();
+            }
+
+            handleTouchMove(e) {
+                e.preventDefault();
+                if (!this.draggedCard) return;
+
+                const touch = e.touches[0];
+                const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                const socket = elementBelow?.closest('.forge-socket');
+
+                // Clear previous drop targets
+                document.querySelectorAll('.forge-socket').forEach(s => s.classList.remove('drop-target'));
+
+                if (socket && !this.sockets[parseInt(socket.dataset.socket)]) {
+                    socket.classList.add('drop-target');
+                    this.dropTarget = socket;
+                } else {
+                    this.dropTarget = null;
+                }
+            }
+
+            handleTouchEnd(e) {
+                e.preventDefault();
+                if (!this.draggedCard) return;
+
+                const card = this.draggedCard;
+                card.classList.remove('dragging');
+
+                if (this.dropTarget) {
+                    const socketIndex = parseInt(this.dropTarget.dataset.socket);
+                    const cardData = this.cards.find(c => c.id === parseInt(card.dataset.cardId));
+                    
+                    this.placeCard(socketIndex, cardData);
+                    this.showToast(`${cardData.name} placed in socket ${socketIndex + 1}!`);
+                    this.addHapticFeedback();
+                }
+
+                // Clean up
+                document.querySelectorAll('.forge-socket').forEach(s => {
+                    s.classList.remove('drop-target');
+                });
+                this.draggedCard = null;
+                this.dropTarget = null;
+            }
+
+            handleSocketTouch(e) {
+                const socket = e.target.closest('.forge-socket');
+                if (!socket) return;
+
+                const socketIndex = parseInt(socket.dataset.socket);
+                if (this.sockets[socketIndex]) {
+                    // Remove card from socket
+                    this.removeCard(socketIndex);
+                    this.addHapticFeedback();
+                }
+            }
+
+            placeCard(socketIndex, cardData) {
+                this.sockets[socketIndex] = cardData;
+                this.usedCards.add(cardData.id);
+                
+                // Update visual
+                const socket = document.querySelector(`[data-socket="${socketIndex}"]`);
+                socket.classList.add('has-card');
+                socket.innerHTML = cardData.name.split(' ')[0];
+
+                const cardElement = document.querySelector(`[data-card-id="${cardData.id}"]`);
+                cardElement.classList.add('used');
+
+                this.updateStats();
+                this.drawConnections();
+            }
+
+            removeCard(socketIndex) {
+                const cardData = this.sockets[socketIndex];
+                if (!cardData) return;
+
+                this.sockets[socketIndex] = null;
+                this.usedCards.delete(cardData.id);
+
+                // Update visual
+                const socket = document.querySelector(`[data-socket="${socketIndex}"]`);
+                socket.classList.remove('has-card');
+                socket.innerHTML = socketIndex + 1;
+
+                const cardElement = document.querySelector(`[data-card-id="${cardData.id}"]`);
+                cardElement.classList.remove('used');
+
+                this.updateStats();
+                this.drawConnections();
+                this.showToast(`${cardData.name} returned to inventory`);
+            }
+
+            highlightAvailableSockets() {
+                document.querySelectorAll('.forge-socket').forEach((socket, index) => {
+                    if (!this.sockets[index]) {
+                        socket.style.animation = 'pulse 1s infinite';
+                    }
+                });
+
+                setTimeout(() => {
+                    document.querySelectorAll('.forge-socket').forEach(socket => {
+                        socket.style.animation = '';
+                    });
+                }, 2000);
+            }
+
+            updateStats() {
+                const totalPower = this.sockets.reduce((sum, card) => sum + (card ? card.power : 0), 0);
+                const cardsPlaced = this.sockets.filter(card => card !== null).length;
+                const connections = this.calculateConnections();
+                const multiplier = 1 + (connections * 0.1);
+                const finalPower = Math.round(totalPower * multiplier);
+                const completion = Math.round((cardsPlaced / 6) * 100);
+
+                document.getElementById('totalPower').textContent = finalPower;
+                document.getElementById('cardsPlaced').textContent = cardsPlaced;
+                document.getElementById('connections').textContent = connections;
+                document.getElementById('multiplier').textContent = multiplier.toFixed(1) + 'x';
+                
+                const progressBar = document.getElementById('progressBar');
+                progressBar.style.width = completion + '%';
+                progressBar.textContent = completion + '%';
+            }
+
+            calculateConnections() {
+                let connections = 0;
+                const adjacent = [
+                    [1, 5], // Socket 0 connects to 1, 5
+                    [0, 2], // Socket 1 connects to 0, 2
+                    [1, 3], // Socket 2 connects to 1, 3
+                    [2, 4], // Socket 3 connects to 2, 4
+                    [3, 5], // Socket 4 connects to 3, 5
+                    [4, 0]  // Socket 5 connects to 4, 0
+                ];
+
+                for (let i = 0; i < 6; i++) {
+                    if (this.sockets[i]) {
+                        adjacent[i].forEach(neighbor => {
+                            if (this.sockets[neighbor] && i < neighbor) { // Avoid double counting
+                                connections++;
+                            }
+                        });
+                    }
+                }
+
+                return connections;
+            }
+
+            drawConnections() {
+                const svg = document.getElementById('connectionLines');
+                svg.innerHTML = '';
+
+                const socketPositions = [
+                    { x: 140, y: 40 },  // Top
+                    { x: 70, y: 120 },  // Top-left
+                    { x: 210, y: 120 }, // Top-right
+                    { x: 70, y: 200 },  // Bottom-left
+                    { x: 210, y: 200 }, // Bottom-right
+                    { x: 140, y: 280 }  // Bottom
+                ];
+
+                const adjacent = [
+                    [1, 5], [0, 2], [1, 3], [2, 4], [3, 5], [4, 0]
+                ];
+
+                for (let i = 0; i < 6; i++) {
+                    if (this.sockets[i]) {
+                        adjacent[i].forEach(neighbor => {
+                            if (this.sockets[neighbor] && i < neighbor) {
+                                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                                line.setAttribute('x1', socketPositions[i].x);
+                                line.setAttribute('y1', socketPositions[i].y);
+                                line.setAttribute('x2', socketPositions[neighbor].x);
+                                line.setAttribute('y2', socketPositions[neighbor].y);
+                                line.className = 'connection-line';
+                                svg.appendChild(line);
+                            }
+                        });
+                    }
+                }
+            }
+
+            autoPlace() {
+                const availableCards = this.cards.filter(card => !this.usedCards.has(card.id));
+                const availableSockets = this.sockets.map((socket, index) => socket === null ? index : null).filter(i => i !== null);
+
+                const count = Math.min(availableCards.length, availableSockets.length);
+                
+                for (let i = 0; i < count; i++) {
+                    const card = availableCards[i];
+                    const socketIndex = availableSockets[i];
+                    this.placeCard(socketIndex, card);
+                }
+
+                if (count > 0) {
+                    this.showToast(`Auto-placed ${count} cards!`);
+                    this.addHapticFeedback();
+                }
+            }
+
+            reset() {
+                this.sockets.fill(null);
+                this.usedCards.clear();
+
+                document.querySelectorAll('.forge-socket').forEach((socket, index) => {
+                    socket.classList.remove('has-card');
+                    socket.innerHTML = index + 1;
+                });
+
+                document.querySelectorAll('.mobile-card').forEach(card => {
+                    card.classList.remove('used');
+                });
+
+                document.getElementById('connectionLines').innerHTML = '';
+                this.updateStats();
+                this.showToast('Forge reset!');
+                this.addHapticFeedback();
+            }
+
+            showToast(message) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+
+            addHapticFeedback() {
+                // Visual haptic feedback
+                document.body.classList.add('haptic-feedback');
+                setTimeout(() => {
+                    document.body.classList.remove('haptic-feedback');
+                }, 100);
+
+                // Try to use device vibration if available
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            }
+        }
+
+        // Initialize the demo when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new MobileForgeDemo();
+        });
+    </script>
+</body>
+</html>

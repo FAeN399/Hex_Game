@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HexCard Forge - Component Library</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #4fc3f7;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }        .component-section {
+            background: rgba(255, 255, 255, 0.05);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            width: 600px;
+            height: calc(600px * 1.1547);
+            padding: 30px 20px;
+            margin: 0 auto 30px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #81c784;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }        .component-code {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            width: 400px;
+            height: calc(400px * 1.1547);
+            padding: 20px 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 15px auto 0;
+            overflow-x: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }        .component-grid {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 20px;
+            justify-items: center;
+            align-items: center;
+        }
+
+        .two-column {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .three-column {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .four-column {
+            grid-template-columns: repeat(4, 1fr);
+        }.component-demo {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            width: 200px;
+            height: calc(200px * 1.1547);
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .component-label {
+            font-size: 0.9rem;
+            color: #b0bec5;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        /* Forge Socket Components */
+        .forge-socket {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #2196f3, #21cbf3);
+            border: 3px solid #4fc3f7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin: 0 auto;
+            font-weight: bold;
+        }
+
+        .forge-socket.variant-empty {
+            background: linear-gradient(45deg, #37474f, #546e7a);
+            border-color: #78909c;
+        }
+
+        .forge-socket.variant-filled {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            border-color: #81c784;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .forge-socket.variant-selected {
+            background: linear-gradient(45deg, #ff9800, #ffb74d);
+            border-color: #ffc107;
+            animation: pulse 1.5s infinite;
+        }
+
+        .forge-socket.variant-disabled {
+            background: linear-gradient(45deg, #424242, #616161);
+            border-color: #757575;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }        /* Card Components */
+        .card-component {
+            width: 180px;
+            height: calc(180px * 1.1547);
+            background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+            border: 3px solid #ba68c8;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .card-component::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #e91e63, #9c27b0, #3f51b5, #2196f3);
+        }
+
+        .card-component.rarity-common {
+            border-color: #9e9e9e;
+            background: linear-gradient(135deg, #424242, #616161);
+        }
+
+        .card-component.rarity-rare {
+            border-color: #2196f3;
+            background: linear-gradient(135deg, #1565c0, #1976d2);
+        }
+
+        .card-component.rarity-epic {
+            border-color: #9c27b0;
+            background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+        }
+
+        .card-component.rarity-legendary {
+            border-color: #ff9800;
+            background: linear-gradient(135deg, #e65100, #f57c00);
+            box-shadow: 0 0 20px rgba(255, 152, 0, 0.3);
+        }
+
+        .card-header {
+            text-align: center;
+        }
+
+        .card-name {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+
+        .card-type {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }        .card-power {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%);
+            font-weight: bold;
+            font-size: 0.9rem;
+            min-width: 60px;
+            height: calc(60px * 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .card-element {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }        .element-fire { background: #f44336; }
+        .element-water { background: #2196f3; }
+        .element-earth { background: #4caf50; }
+        .element-air { background: #ffeb3b; color: #000; }
+        .element-light { background: #fff; color: #000; }
+        .element-dark { background: #424242; }
+
+        /* Button Components */
+        .btn-component {
+            padding: 12px 20px;
+            border: 2px solid;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            width: 150px;
+            height: calc(150px * 1.1547);
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: none;
+            color: inherit;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 8px;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #2196f3, #21cbf3);
+            border-color: #4fc3f7;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #1976d2, #0288d1);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #6a1b9a, #8e24aa);
+            border-color: #ba68c8;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #4a148c, #6a1b9a);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            border-color: #81c784;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(45deg, #388e3c, #4caf50);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f44336, #ef5350);
+            border-color: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #d32f2f, #c62828);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: #4fc3f7;
+            color: #4fc3f7;
+        }
+
+        .btn-outline:hover {
+            background: #4fc3f7;
+            color: #000;
+        }
+
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }        /* Progress Components */
+        .progress-component {
+            background: rgba(255, 255, 255, 0.1);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            width: 300px;
+            height: calc(300px * 0.3);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #81c784);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .progress-25 { width: 25%; }
+        .progress-50 { width: 50%; }
+        .progress-75 { width: 75%; }
+        .progress-100 { width: 100%; }
+
+        .progress-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(#4caf50 0deg, #4caf50 126deg, rgba(255,255,255,0.1) 126deg, rgba(255,255,255,0.1) 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .progress-circle::before {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #1a1a2e;
+        }
+
+        .progress-text {
+            position: relative;
+            z-index: 1;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Stats Components */        .stat-component {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            width: 200px;
+            height: calc(200px * 1.1547);
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-component:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #4fc3f7;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4fc3f7;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .stat-increase {
+            color: #4caf50;
+        }
+
+        .stat-decrease {
+            color: #f44336;
+        }        /* Connection Line Component */
+        .connection-demo {
+            position: relative;
+            width: 300px;
+            height: calc(300px * 1.1547);
+            background: rgba(255, 255, 255, 0.05);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            overflow: hidden;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .connection-points {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .connection-point {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #4fc3f7;
+            border-radius: 50%;
+            border: 2px solid #21cbf3;
+        }
+
+        .point-1 { top: 20px; left: 20px; }
+        .point-2 { top: 20px; right: 20px; }
+        .point-3 { bottom: 20px; left: 20px; }
+        .point-4 { bottom: 20px; right: 20px; }
+
+        .connection-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .connection-line {
+            stroke: #4caf50;
+            stroke-width: 3;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 5px #4caf50);
+            animation: connectionFlow 2s infinite;
+        }
+
+        @keyframes connectionFlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .four-column {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .three-column,
+            .four-column {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .two-column,
+            .three-column,
+            .four-column {
+                grid-template-columns: 1fr;
+            }
+
+            .card-component {
+                width: 150px;
+                height: 200px;
+            }
+        }        .code-toggle {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #4fc3f7;
+            padding: 5px 10px;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%);
+            cursor: pointer;
+            font-size: 0.8rem;
+            min-width: 80px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }        .code-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive Design for Hexagons */
+        @media (max-width: 768px) {
+            .component-section {
+                width: 400px;
+                height: calc(400px * 1.1547);
+                padding: 20px 15px;
+            }
+            
+            .component-demo {
+                width: 150px;
+                height: calc(150px * 1.1547);
+                padding: 15px 8px;
+            }
+            
+            .card-component {
+                width: 130px;
+                height: calc(130px * 1.1547);
+                padding: 15px 8px;
+            }
+            
+            .btn-component {
+                width: 120px;
+                height: calc(120px * 1.1547);
+                padding: 10px 8px;
+                font-size: 0.8rem;
+            }
+            
+            .stat-component {
+                width: 150px;
+                height: calc(150px * 1.1547);
+                padding: 15px 8px;
+            }
+            
+            .component-grid.four-column {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .component-grid.three-column {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .component-section {
+                width: 300px;
+                height: calc(300px * 1.1547);
+                padding: 15px 10px;
+            }
+            
+            .component-demo {
+                width: 120px;
+                height: calc(120px * 1.1547);
+                padding: 12px 6px;
+            }
+            
+            .card-component {
+                width: 100px;
+                height: calc(100px * 1.1547);
+                padding: 12px 6px;
+                font-size: 0.8rem;
+            }
+            
+            .component-grid.four-column,
+            .component-grid.three-column,
+            .component-grid.two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🔧 HexCard Forge Component Library</h1>
+        <p>Complete showcase of all UI components and their variations</p>
+    </header>
+
+    <div class="container">
+        <!-- Forge Socket Components -->
+        <section class="component-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span>⚡</span>
+                    Forge Socket Components
+                </h2>
+                <button class="code-toggle" onclick="toggleCode('socket-code')">Show Code</button>
+            </div>
+            
+            <div class="component-grid four-column">
+                <div class="component-demo">
+                    <div class="component-label">Default Socket</div>
+                    <div class="forge-socket">1</div>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Empty Socket</div>
+                    <div class="forge-socket variant-empty">E</div>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Filled Socket</div>
+                    <div class="forge-socket variant-filled">✓</div>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Selected Socket</div>
+                    <div class="forge-socket variant-selected">S</div>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Disabled Socket</div>
+                    <div class="forge-socket variant-disabled">X</div>
+                </div>
+            </div>
+            
+            <div class="component-code" id="socket-code" style="display: none;">
+.forge-socket {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(45deg, #2196f3, #21cbf3);
+    border: 3px solid #4fc3f7;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.forge-socket.variant-filled {
+    background: linear-gradient(45deg, #4caf50, #66bb6a);
+    border-color: #81c784;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+}
+            </div>
+        </section>
+
+        <!-- Card Components -->
+        <section class="component-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span>🎴</span>
+                    Card Components
+                </h2>
+                <button class="code-toggle" onclick="toggleCode('card-code')">Show Code</button>
+            </div>
+            
+            <div class="component-grid four-column">
+                <div class="component-demo">
+                    <div class="component-label">Common Card</div>
+                    <div class="card-component rarity-common">
+                        <div class="card-header">
+                            <div class="card-name">Basic Warrior</div>
+                            <div class="card-type">Warrior</div>
+                        </div>
+                        <div class="card-content">⚔️</div>
+                        <div class="card-footer">
+                            <div class="card-power">45</div>
+                            <div class="card-element element-fire">🔥</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Rare Card</div>
+                    <div class="card-component rarity-rare">
+                        <div class="card-header">
+                            <div class="card-name">Ice Mage</div>
+                            <div class="card-type">Mage</div>
+                        </div>
+                        <div class="card-content">❄️</div>
+                        <div class="card-footer">
+                            <div class="card-power">65</div>
+                            <div class="card-element element-water">💧</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Epic Card</div>
+                    <div class="card-component rarity-epic">
+                        <div class="card-header">
+                            <div class="card-name">Earth Guardian</div>
+                            <div class="card-type">Tank</div>
+                        </div>
+                        <div class="card-content">🛡️</div>
+                        <div class="card-footer">
+                            <div class="card-power">85</div>
+                            <div class="card-element element-earth">🌱</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Legendary Card</div>
+                    <div class="card-component rarity-legendary">
+                        <div class="card-header">
+                            <div class="card-name">Solar Phoenix</div>
+                            <div class="card-type">Legendary</div>
+                        </div>
+                        <div class="card-content">🔆</div>
+                        <div class="card-footer">
+                            <div class="card-power">120</div>
+                            <div class="card-element element-light">💫</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+              <div class="component-code" id="card-code" style="display: none;">
+.card-component {
+    width: 180px;
+    height: calc(180px * 1.1547);
+    background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+    border: 3px solid #ba68c8;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    transition: all 0.3s ease;
+}
+
+.card-component.rarity-legendary {
+    border-color: #ff9800;
+    background: linear-gradient(135deg, #e65100, #f57c00);
+    box-shadow: 0 0 20px rgba(255, 152, 0, 0.3);
+}
+            </div>
+        </section>
+
+        <!-- Button Components -->
+        <section class="component-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span>🔘</span>
+                    Button Components
+                </h2>
+                <button class="code-toggle" onclick="toggleCode('button-code')">Show Code</button>
+            </div>
+            
+            <div class="component-grid three-column">
+                <div class="component-demo">
+                    <div class="component-label">Primary Button</div>
+                    <button class="btn-component btn-primary">
+                        <span>⚡</span>
+                        Forge
+                    </button>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Secondary Button</div>
+                    <button class="btn-component btn-secondary">
+                        <span>🎴</span>
+                        Cards
+                    </button>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Success Button</div>
+                    <button class="btn-component btn-success">
+                        <span>✓</span>
+                        Complete
+                    </button>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Danger Button</div>
+                    <button class="btn-component btn-danger">
+                        <span>🗑️</span>
+                        Reset
+                    </button>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Outline Button</div>
+                    <button class="btn-component btn-outline">
+                        <span>ℹ️</span>
+                        Info
+                    </button>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Disabled Button</div>
+                    <button class="btn-component btn-primary btn-disabled">
+                        <span>⏸️</span>
+                        Disabled
+                    </button>
+                </div>
+            </div>
+              <div class="component-code" id="button-code" style="display: none;">
+.btn-component {
+    padding: 12px 20px;
+    border: 2px solid;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    width: 150px;
+    height: calc(150px * 1.1547);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #2196f3, #21cbf3);
+    border-color: #4fc3f7;
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+}
+            </div>
+        </section>
+
+        <!-- Progress Components -->
+        <section class="component-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span>📊</span>
+                    Progress Components
+                </h2>
+                <button class="code-toggle" onclick="toggleCode('progress-code')">Show Code</button>
+            </div>
+            
+            <div class="component-grid two-column">
+                <div class="component-demo">
+                    <div class="component-label">Progress Bars</div>
+                    <div class="progress-component">
+                        <div class="progress-bar progress-25">25%</div>
+                    </div>
+                    <div class="progress-component">
+                        <div class="progress-bar progress-50">50%</div>
+                    </div>
+                    <div class="progress-component">
+                        <div class="progress-bar progress-75">75%</div>
+                    </div>
+                    <div class="progress-component">
+                        <div class="progress-bar progress-100">100%</div>
+                    </div>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="component-label">Circular Progress</div>
+                    <div class="progress-circle">
+                        <div class="progress-text">35%</div>
+                    </div>
+                </div>
+            </div>
+              <div class="component-code" id="progress-code" style="display: none;">
+.progress-component {
+    background: rgba(255, 255, 255, 0.1);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    width: 300px;
+    height: calc(300px * 0.3);
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4caf50, #81c784);
+    transition: width 0.5s ease;
+}
+
+.progress-circle {
+    background: conic-gradient(#4caf50 0deg, #4caf50 126deg, rgba(255,255,255,0.1) 126deg);
+}
+            </div>
+        </section>
+
+        <!-- Stats Components -->
+        <section class="component-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span>📈</span>
+                    Stats Components
+                </h2>
+                <button class="code-toggle" onclick="toggleCode('stats-code')">Show Code</button>
+            </div>
+            
+            <div class="component-grid four-column">
+                <div class="component-demo">
+                    <div class="stat-component">
+                        <span class="stat-value">1,247</span>
+                        <div class="stat-label">Total Power</div>
+                        <div class="stat-change stat-increase">+12% ↑</div>
+                    </div>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="stat-component">
+                        <span class="stat-value">6</span>
+                        <div class="stat-label">Cards Active</div>
+                        <div class="stat-change stat-increase">+2 ↑</div>
+                    </div>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="stat-component">
+                        <span class="stat-value">8</span>
+                        <div class="stat-label">Connections</div>
+                        <div class="stat-change stat-increase">+3 ↑</div>
+                    </div>
+                </div>
+                
+                <div class="component-demo">
+                    <div class="stat-component">
+                        <span class="stat-value">2.4x</span>
+                        <div class="stat-label">Multiplier</div>
+                        <div class="stat-change stat-decrease">-0.2x ↓</div>
+                    </div>
+                </div>
+            </div>
+              <div class="component-code" id="stats-code" style="display: none;">
+.stat-component {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    width: 200px;
+    height: calc(200px * 1.1547);
+    padding: 20px 10px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #4fc3f7;
+}
+
+.stat-increase { color: #4caf50; }
+.stat-decrease { color: #f44336; }
+            </div>
+        </section>
+
+        <!-- Connection Components -->
+        <section class="component-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span>🔗</span>
+                    Connection Components
+                </h2>
+                <button class="code-toggle" onclick="toggleCode('connection-code')">Show Code</button>
+            </div>
+            
+            <div class="component-grid">
+                <div class="component-demo">
+                    <div class="component-label">Active Connections</div>
+                    <div class="connection-demo">
+                        <div class="connection-points">
+                            <div class="connection-point point-1"></div>
+                            <div class="connection-point point-2"></div>
+                            <div class="connection-point point-3"></div>
+                            <div class="connection-point point-4"></div>
+                        </div>
+                        <svg class="connection-svg">
+                            <line x1="30" y1="30" x2="250" y2="30" class="connection-line"/>
+                            <line x1="30" y1="30" x2="30" y2="170" class="connection-line"/>
+                            <line x1="250" y1="30" x2="250" y2="170" class="connection-line"/>
+                            <line x1="30" y1="170" x2="250" y2="170" class="connection-line"/>
+                            <line x1="30" y1="30" x2="250" y2="170" class="connection-line"/>
+                            <line x1="250" y1="30" x2="30" y2="170" class="connection-line"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="component-code" id="connection-code" style="display: none;">
+.connection-line {
+    stroke: #4caf50;
+    stroke-width: 3;
+    opacity: 0.8;
+    filter: drop-shadow(0 0 5px #4caf50);
+    animation: connectionFlow 2s infinite;
+}
+
+@keyframes connectionFlow {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function toggleCode(codeId) {
+            const codeElement = document.getElementById(codeId);
+            const button = event.target;
+            
+            if (codeElement.style.display === 'none') {
+                codeElement.style.display = 'block';
+                button.textContent = 'Hide Code';
+            } else {
+                codeElement.style.display = 'none';
+                button.textContent = 'Show Code';
+            }
+        }
+
+        // Add hover effects to components
+        document.addEventListener('DOMContentLoaded', function() {
+            // Socket hover effects
+            document.querySelectorAll('.forge-socket').forEach(socket => {
+                socket.addEventListener('mouseenter', function() {
+                    if (!this.classList.contains('variant-disabled')) {
+                        this.style.transform = 'scale(1.1)';
+                    }
+                });
+                
+                socket.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+
+            // Card hover effects
+            document.querySelectorAll('.card-component').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) rotateY(5deg)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) rotateY(0)';
+                });
+            });
+
+            // Button click effects
+            document.querySelectorAll('.btn-component:not(.btn-disabled)').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // Stat component animations
+            document.querySelectorAll('.stat-component').forEach(stat => {
+                stat.addEventListener('mouseenter', function() {
+                    const value = this.querySelector('.stat-value');
+                    value.style.transform = 'scale(1.1)';
+                });
+                
+                stat.addEventListener('mouseleave', function() {
+                    const value = this.querySelector('.stat-value');
+                    value.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

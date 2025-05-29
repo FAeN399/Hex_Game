@@ -1,6 +1,4 @@
-import * as React from 'react';
-const { useState, useEffect } = React;
-import { useForgeStore } from './useForgeLogic';
+import React, { FC, useState, useEffect, ChangeEvent } from 'react';
 import { 
   saveForgeConfiguration, 
   loadForgeConfiguration, 
@@ -11,10 +9,9 @@ import {
 } from './forgePersistence';
 import styles from './styles.module.css';
 
-export interface ForgeConfigManagerProps {
+interface ForgeConfigurationManagerProps {
   onConfigLoaded?: () => void;
   onError?: (error: string) => void;
-  className?: string;
 }
 
 interface SavedConfig {
@@ -26,15 +23,10 @@ interface SavedConfig {
 /**
  * UI component for managing forge configurations (save/load/delete)
  */
-const ForgeConfigurationManager: React.FC<ForgeConfigManagerProps> = ({ 
-  onConfigLoaded, 
-  onError,
-  className = ''
+const ForgeConfigurationManager: FC<ForgeConfigurationManagerProps> = ({
+  onConfigLoaded,
+  onError
 }) => {
-  // Format timestamp for display
-  const formatDate = (timestamp: number): string => {
-    return new Date(timestamp).toLocaleString();
-  };
   // State for configurations and UI controls
   const [configurations, setConfigurations] = useState<SavedConfig[]>([]);
   const [configName, setConfigName] = useState<string>('');
@@ -48,14 +40,13 @@ const ForgeConfigurationManager: React.FC<ForgeConfigManagerProps> = ({
     refreshConfigurations();
   }, []);
   
-  // Fetch all saved configurations
-  const refreshConfigurations = () => {
+  // Refresh the list of configurations from storage
+  const refreshConfigurations = (): void => {
     try {
       const configs = getAllSavedConfigurations();
       setConfigurations(configs);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch configurations';
-      onError?.(errorMessage);
+    } catch (error) {
+      handleError(`Failed to load configurations: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
   
@@ -67,153 +58,153 @@ const ForgeConfigurationManager: React.FC<ForgeConfigManagerProps> = ({
     }
   };
   
-  // Helper function to reset the modal state
-  const resetModalState = () => {
+  // Open modal for different operations
+  const openModal = (mode: 'save' | 'load' | 'export' | 'import'): void => {
+    setModalMode(mode);
+    setIsModalOpen(true);
+    
+    // Reset form state
     setConfigName('');
     setSelectedConfigId(null);
     setImportJson('');
+    
+    // Refresh configurations when opening load/export modals
+    if (mode === 'load' || mode === 'export') {
+      refreshConfigurations();
+    }
   };
   
-  // Open modal with specified mode
-  const openModal = (mode: 'save' | 'load' | 'export' | 'import') => {
-    setModalMode(mode);
-    resetModalState();
-    refreshConfigurations();
-    setIsModalOpen(true);
-  };
-  
-  // Close the modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-  
-  // Handle save button click
-  const handleSave = () => {
-    if (configName.trim().length === 0) {
-      onError?.('Please enter a name for your configuration');
+  // Save current configuration
+  const handleSave = (): void => {
+    if (!configName.trim()) {
+      handleError('Please enter a name for this configuration');
       return;
     }
-
+    
     try {
-      saveForgeConfiguration(configName);
-      setIsModalOpen(false);
-      setConfigName('');
+      const id = saveForgeConfiguration(configName);
       refreshConfigurations();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to save configuration';
-      onError?.(errorMessage);
+      closeModal();
+      
+      // Show success notification
+      // This would be replaced with a proper notification system
+      console.log(`Configuration "${configName}" saved successfully!`);
+    } catch (error) {
+      handleError(`Failed to save configuration: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
   
-  // Handle load button click
-  const handleLoad = () => {
+  // Load selected configuration
+  const handleLoad = (): void => {
     if (!selectedConfigId) {
-      onError?.('Please select a configuration to load');
+      handleError('Please select a configuration to load');
       return;
     }
     
     try {
       loadForgeConfiguration(selectedConfigId);
-      setIsModalOpen(false);
+      closeModal();
       
       // Notify parent component
       if (onConfigLoaded) {
         onConfigLoaded();
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load configuration';
-      onError?.(errorMessage);
+      
+      // Show success notification
+      const config = configurations.find((c: SavedConfig) => c.id === selectedConfigId);
+      console.log(`Configuration "${config?.name}" loaded successfully!`);
+    } catch (error) {
+      handleError(`Failed to load configuration: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
   
-  // Handle delete button click for a specific configuration
-  const handleDelete = (configId: string, event: React.MouseEvent<HTMLButtonElement>): void => {
-    event.stopPropagation(); // Prevent triggering the load action
-    try {
-      deleteForgeConfiguration(configId);
-      refreshConfigurations();
-      // showMessage(`Configuration "${configId}" has been deleted`);
-      
-      // Reset selected config if we just deleted the selected one
-      if (selectedConfigId === configId) {
-        setSelectedConfigId(null);
+  // Delete selected configuration
+  const handleDelete = (id: string, event: React.MouseEvent<HTMLButtonElement>): void => {
+    event.stopPropagation(); // Prevent selection when clicking delete
+    
+    if (window.confirm('Are you sure you want to delete this configuration?')) {
+      try {
+        deleteForgeConfiguration(id);
+        refreshConfigurations();
+        
+        // Show success notification
+        console.log('Configuration deleted successfully!');
+      } catch (error) {
+        handleError(`Failed to delete configuration: ${error instanceof Error ? error.message : String(error)}`);
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete configuration';
-      onError?.(errorMessage);
     }
   };
   
-  // Handle export button click for a specific configuration
-  const handleExport = (configId: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent triggering the load action
+  // Export selected configuration
+  const handleExport = (): void => {
+    if (!selectedConfigId) {
+      handleError('Please select a configuration to export');
+      return;
+    }
+    
     try {
-      const jsonString = exportForgeConfiguration(configId);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
+      const jsonData = exportForgeConfiguration(selectedConfigId);
       
+      // Create a download link
+      const blob = new Blob([jsonData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
+      const config = configurations.find((c: SavedConfig) => c.id === selectedConfigId);
+      
       a.href = url;
-      a.download = `hexforge-config-${configId}.json`;
+      a.download = `forge-config-${config?.name.replace(/\s+/g, '-').toLowerCase() || 'export'}.json`;
+      document.body.appendChild(a);
       a.click();
       
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to export configuration';
-      onError?.(errorMessage);
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+      closeModal();
+    } catch (error) {
+      handleError(`Failed to export configuration: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
   
-  // Handler for import button
-  const handleImport = async () => {
+  // Import configuration from JSON
+  const handleImport = (): void => {
+    if (!importJson.trim()) {
+      handleError('Please paste a valid configuration JSON');
+      return;
+    }
+    
     try {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.json';
-      input.onchange = async (e: Event) => {
-        const target = e.target as HTMLInputElement;
-        const file = target.files?.[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          try {
-            if (event.target?.result) {
-              const jsonString = event.target.result.toString();
-              const configId = importForgeConfiguration(jsonString);
-              loadForgeConfiguration(configId);
-              setIsModalOpen(false);
-              onConfigLoaded?.();
-              refreshConfigurations();
-            }
-          } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Failed to import configuration';
-            onError?.(errorMessage);
-          }
-        };
-        reader.onerror = () => onError?.('Error reading file');
-        reader.readAsText(file);
-      };
-      input.click();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to import configuration';
-      onError?.(errorMessage);
+      const id = importForgeConfiguration(importJson);
+      refreshConfigurations();
+      closeModal();
+      
+      // Show success notification
+      console.log('Configuration imported successfully!');
+    } catch (error) {
+      handleError(`Failed to import configuration: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
   
-  // Check if there are placed cards in the forge
-  const { placedCards } = useForgeStore();
-  const hasPlacedCards = placedCards.some(card => card !== null);
-
+  // Close the modal
+  const closeModal = (): void => {
+    setIsModalOpen(false);
+  };
+  
+  // Format timestamp for display
+  const formatDate = (timestamp: number): string => {
+    return new Date(timestamp).toLocaleString();
+  };
+  
   return (
-    <div className={`${styles.configManager} ${className}`}>
+    <div className={styles.configManager}>
       {/* Action buttons */}
       <div className={styles.configButtons}>
         <button 
-          className={`${styles.configButton} ${styles.saveButton}`}
+          className={`${styles.configButton} ${styles.saveButton}`} 
           onClick={() => openModal('save')}
-          disabled={!hasPlacedCards}
-          title={hasPlacedCards ? 'Save current forge configuration' : 'Place cards to enable saving'}
+          aria-label="Save forge configuration"
         >
           Save Configuration
         </button>
@@ -244,7 +235,7 @@ const ForgeConfigurationManager: React.FC<ForgeConfigManagerProps> = ({
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <button className={styles.closeButton} onClick={() => setIsModalOpen(false)} aria-label="Close modal">
+            <button className={styles.closeButton} onClick={closeModal} aria-label="Close modal">
               &times;
             </button>
             
@@ -264,7 +255,7 @@ const ForgeConfigurationManager: React.FC<ForgeConfigManagerProps> = ({
                     id="config-name"
                     type="text"
                     value={configName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfigName(e.target.value)}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setConfigName(e.target.value)}
                     placeholder="Enter a name for this configuration"
                     className={styles.textInput}
                   />
@@ -279,7 +270,7 @@ const ForgeConfigurationManager: React.FC<ForgeConfigManagerProps> = ({
                   </button>
                   <button 
                     className={styles.configButton}
-                    onClick={() => setIsModalOpen(false)}
+                    onClick={closeModal}
                   >
                     Cancel
                   </button>
@@ -304,10 +295,7 @@ const ForgeConfigurationManager: React.FC<ForgeConfigManagerProps> = ({
                         </div>
                         <button 
                           className={styles.deleteButton}
-                          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                            e.stopPropagation();
-                            handleDelete(config.id, e);
-                          }}
+                          onClick={(e) => handleDelete(config.id, e)}
                           aria-label="Delete this configuration"
                         >
                           Delete
@@ -329,7 +317,7 @@ const ForgeConfigurationManager: React.FC<ForgeConfigManagerProps> = ({
                   </button>
                   <button 
                     className={styles.configButton}
-                    onClick={() => closeModal()}
+                    onClick={closeModal}
                   >
                     Cancel
                   </button>
@@ -345,7 +333,7 @@ const ForgeConfigurationManager: React.FC<ForgeConfigManagerProps> = ({
                   <textarea
                     id="import-json"
                     value={importJson}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setImportJson(e.target.value)}
+                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setImportJson(e.target.value)}
                     placeholder="Paste the exported JSON configuration here"
                     className={styles.textArea}
                     rows={10}
@@ -361,7 +349,7 @@ const ForgeConfigurationManager: React.FC<ForgeConfigManagerProps> = ({
                   </button>
                   <button 
                     className={styles.configButton}
-                    onClick={() => closeModal()}
+                    onClick={closeModal}
                   >
                     Cancel
                   </button>

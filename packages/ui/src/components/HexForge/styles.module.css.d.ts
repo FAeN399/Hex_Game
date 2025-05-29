@@ -11,12 +11,6 @@ declare const styles: {
   readonly 'forgeActive': string;
   readonly 'particleContainer': string;
   readonly 'particle': string;
-  readonly 'particleTrail': string;
-  readonly 'particlePulse': string;
-  readonly 'particleConnection': string;
-  readonly 'particleForge': string;
-  readonly 'particleSuccess': string;
-  readonly 'particlePlacement': string;
   readonly 'cardPlacingAnimation': string;
   readonly 'connectionActivating': string;
   readonly 'forgeSuccess': string;
@@ -32,44 +26,6 @@ declare const styles: {
   readonly 'forgeButton': string;
   readonly 'forging': string;
   readonly 'accessibilityMode': string;
-  
-  // Configuration Manager styles
-  readonly 'configManager': string;
-  readonly 'configButtons': string;
-  readonly 'configButton': string;
-  readonly 'saveButton': string;
-  readonly 'loadButton': string;
-  readonly 'exportButton': string;
-  readonly 'importButton': string;
-  readonly 'modalOverlay': string;
-  readonly 'modal': string;
-  readonly 'modalTitle': string;
-  readonly 'closeButton': string;
-  readonly 'modalContent': string;
-  readonly 'formGroup': string;
-  readonly 'textInput': string;
-  readonly 'textArea': string;
-  readonly 'modalActions': string;
-  readonly 'configList': string;
-  readonly 'configItem': string;
-  readonly 'configSelected': string;
-  readonly 'configInfo': string;
-  readonly 'configName': string;
-  readonly 'configDate': string;
-  readonly 'configActions': string;
-  readonly 'deleteButton': string;
-  readonly 'emptyMessage': string;
-  readonly 'messageOverlay': string;
-  readonly 'message': string;
-  
-  // Edge tooltip styles
-  readonly 'edgeTooltip': string;
-  readonly 'validTooltip': string;
-  readonly 'invalidTooltip': string;
-  readonly 'tooltipContent': string;
-  readonly 'edgeIcons': string;
-  readonly 'connectionSymbol': string;
-  readonly 'tooltipText': string;
 };
 
 export default styles;

@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<!--
+  Advanced HexCard Forge Demo - Enhanced Features
+ 
+  This demo showcases advanced forge functionality:
+  - Edge connection validation
+  - Particle effects and animations
+  - Advanced card properties and rarities
+  - 3D visual effects
+  - Sound feedback simulation
+  - Complex stat calculations
+ 
+  Perfect for showcasing the full potential of the component
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HexCard Forge - Top Forge & Hex Cards</title>
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Enhanced color palette */
+      --bg-primary: #0E0815;
+      --bg-secondary: #1C0A2D;
+      --bg-tertiary: #372549;
+      --accent-cyan: #5CE1E6;
+      --accent-gold: #F2C94C;
+      --accent-red: #E85B9E;
+      --accent-purple: #8B5CF6;
+      --accent-green: #10B981;
+      --text-primary: #E0D7FF;
+      --text-secondary: #B886DD;
+      --socket-empty: #AFD4E8;
+      --socket-filled: #70A4C4;
+      --connection-valid: #10B981;
+      --connection-invalid: #EF4444;
+      --rarity-common: #6B7280;
+      --rarity-rare: #8B5CF6;
+      --rarity-epic: #F59E0B;
+      --rarity-legendary: #EF4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 3rem;
+      background: linear-gradient(45deg, var(--accent-cyan), var(--accent-gold), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      text-shadow: 0 0 30px rgba(92, 225, 230, 0.5);
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    .demo-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .control-btn {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .control-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(92, 225, 230, 0.4);
+    }
+
+    /* Updated Demo Layout */
+    .demo-layout {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Centers .forge-area and .bottom-panels if they have max-width */
+      gap: 30px;
+    }
+
+    .forge-area {
+      background: var(--bg-secondary);
+      border-radius: 20px;
+      padding: 20px; /* Adjusted padding */
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+      width: 100%; /* Take available width within flex parent */
+      max-width: 700px; /* Max width for the forge area itself */
+    }
+
+    .forge-area::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(92, 225, 230, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hex-forge {
+      position: relative;
+      width: 500px; 
+      height: 500px; 
+      margin: 0 auto; /* This will center the forge if forge-area is wider */
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+    
+    .bottom-panels {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around; /* Distribute space */
+      width: 100%;
+      max-width: 1200px; /* Max width for the bottom section */
+      gap: 30px;
+    }
+
+    .card-inventory {
+      background: var(--bg-tertiary);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      flex: 1; /* Allow to grow and shrink */
+      min-width: 300px; /* Minimum width */
+      max-width: 400px; /* Maximum width */
+    }
+
+    .sidebar {
+      background: var(--bg-tertiary);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      flex: 1; /* Allow to grow and shrink */
+      min-width: 280px; /* Minimum width */
+      max-width: 350px; /* Maximum width */
+    }
+
+
+    .socket {
+      position: absolute;
+      width: 100px; 
+      height: 115px; 
+      background: var(--socket-empty);
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      /* border: 3px solid var(--accent-cyan); */ /* Replaced by outline for consistency with cards */
+      outline: 3px solid var(--accent-cyan);
+      outline-offset: -3px; /* Draw outline inside */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      font-size: 0.8rem;
+      text-align: center;
+      color: var(--bg-primary);
+      font-weight: 600;
+      overflow: hidden;
+    }
+
+    .socket::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.1) 49%, rgba(255,255,255,0.1) 51%, transparent 52%);
+      background-size: 20px 20px;
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .socket:hover {
+      transform: scale(1.1) translateZ(20px);
+      outline-color: var(--accent-gold);
+      filter: drop-shadow(0 0 15px var(--accent-gold));
+    }
+
+    .socket.filled {
+      background: var(--socket-filled);
+      outline-color: var(--accent-cyan);
+      transform: scale(1.05); 
+      filter: drop-shadow(0 0 10px var(--accent-cyan));
+    }
+
+    .socket.valid-connection {
+      outline-color: var(--connection-valid);
+       filter: drop-shadow(0 0 12px var(--connection-valid));
+    }
+
+    .socket.invalid-connection {
+      outline-color: var(--connection-invalid);
+      filter: drop-shadow(0 0 12px var(--connection-invalid));
+    }
+
+    .socket.drop-target {
+      outline-color: var(--accent-gold);
+      background: rgba(242, 201, 76, 0.3);
+      transform: scale(1.15) translateZ(30px);
+      animation: pulse-drop 1s infinite;
+    }
+
+    @keyframes pulse-drop {
+      0%, 100% { filter: drop-shadow(0 0 10px var(--accent-gold)); }
+      50% { filter: drop-shadow(0 0 20px var(--accent-gold)); }
+    }
+
+    .socket:nth-child(1) { top: 42.5px; left: 50%; transform: translateX(-50%); right: auto; bottom: auto; }
+    .socket:nth-child(2) { top: 117.5px; left: 329.9px; transform: none; right: auto; bottom: auto; }
+    .socket:nth-child(3) { top: 267.5px; left: 329.9px; transform: none; right: auto; bottom: auto; }
+    .socket:nth-child(4) { top: 342.5px; left: 50%; transform: translateX(-50%); right: auto; bottom: auto; }
+    .socket:nth-child(5) { top: 267.5px; left: 70.1px;  transform: none; right: auto; bottom: auto; }
+    .socket:nth-child(6) { top: 117.5px; left: 70.1px;  transform: none; right: auto; bottom: auto; }
+
+    .center-forge {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 120px; height: 120px; border-radius: 50%;
+      background: conic-gradient(var(--accent-cyan), var(--accent-purple), var(--accent-gold), var(--accent-red), var(--accent-cyan));
+      animation: rotate 20s linear infinite; display: flex; justify-content: center; align-items: center;
+    }
+    .center-forge::before {
+      content: ''; width: 90%; height: 90%; border-radius: 50%; background: var(--bg-secondary);
+      display: flex; justify-content: center; align-items: center;
+    }
+    .center-eye {
+      position: absolute; width: 80px; height: 80px; border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-gold) 0%, #D99000 70%, var(--bg-primary) 100%);
+      box-shadow: 0 0 40px rgba(242, 201, 76, 0.8); animation: eye-pulse 4s infinite alternate; z-index: 2;
+    }
+    .center-eye::after {
+      content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 30px; height: 30px; border-radius: 50%; background: var(--bg-primary);
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    }
+    @keyframes rotate { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+    @keyframes eye-pulse { 0% { box-shadow: 0 0 20px rgba(242, 201, 76, 0.6); } 100% { box-shadow: 0 0 60px rgba(242, 201, 76, 1); } }
+
+    .connections { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+    .connection-line {
+      position: absolute; height: 4px; background: var(--connection-valid); opacity: 0;
+      transition: all 0.5s ease; box-shadow: 0 0 15px var(--connection-valid); border-radius: 2px;
+    }
+    .connection-line.active { opacity: 1; animation: connection-flow 2s infinite; }
+    .connection-line.invalid { background: var(--connection-invalid); box-shadow: 0 0 15px var(--connection-invalid); opacity: 1; }
+    @keyframes connection-flow { 0%, 100% { box-shadow: 0 0 10px var(--connection-valid); } 50% { box-shadow: 0 0 25px var(--connection-valid), 0 0 35px var(--connection-valid); } }
+
+    .particle-system { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+    .particle {
+      position: absolute; width: 4px; height: 4px; background: var(--accent-cyan);
+      border-radius: 50%; opacity: 0; animation: particle-float 3s infinite;
+    }
+    @keyframes particle-float { 0% { opacity: 0; transform: translateY(100px) scale(0); } 10% { opacity: 1; transform: translateY(80px) scale(1); } 90% { opacity: 1; transform: translateY(-80px) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(0); } }
+
+    .inventory-title { font-size: 1.3rem; font-weight: 600; color: var(--accent-cyan); margin-bottom: 20px; text-align: center; }
+    .card-grid { display: flex; flex-direction: column; gap: 20px; /* Increased gap for hex cards */ max-height: 600px; overflow-y: auto; align-items: center; /* Center cards if grid is wider */ }
+
+    /* Hexagonal Card Styling */
+    .card {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+      outline: 3px solid var(--rarity-common);
+      outline-offset: -3px; /* Draw outline inside the clip-path edge */
+      cursor: grab;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: visible; /* Needed for drop-shadow to be visible outside clip-path */
+      
+      width: 200px; 
+      height: 230px; /* approx 1:1.15 ratio for point-up hexagon */
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Vertically center content */
+      align-items: center; /* Horizontally center content */
+      padding: 20px 5px; /* Adjusted padding for hex shape */
+    }
+
+    .card.rare { outline-color: var(--rarity-rare); }
+    .card.epic { outline-color: var(--rarity-epic); }
+    .card.legendary { outline-color: var(--rarity-legendary); }
+
+    .card::before { /* Shimmer effect */
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      transition: left 0.5s;
+      /* clip-path is inherited, so shimmer will be hexagonal */
+    }
+    .card:hover::before { left: 100%; }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.05); /* Slightly less scale for hex */
+      outline-color: var(--accent-gold);
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4)) drop-shadow(0 0 15px var(--accent-gold));
+    }
+    .card.dragging {
+      opacity: 0.7; /* Slightly more opaque */
+      transform: rotate(5deg) scale(1.1);
+      z-index: 1000;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5));
+    }
+    .card.placed {
+      opacity: 0.4; /* Slightly more opaque */
+      pointer-events: none;
+      filter: grayscale(80%);
+    }
+
+    /* Card internal content */
+    .card-header, .card-type, .card-edges, .card-stats {
+      width: 90%; /* Constrain width of inner elements */
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center; /* Center text */
+      position: relative; /* For z-index if needed over shimmer */
+      z-index: 1;
+    }
+    .card-header { margin-bottom: 8px; }
+    .card-name { font-size: 0.9rem; /* Adjusted for smaller space */ }
+    .card-rarity { font-size: 0.65rem; padding: 2px 5px; }
+    .card-type { font-size: 0.75rem; margin-bottom: 6px; }
+    .card-edges { 
+        display: flex; 
+        gap: 4px; 
+        margin-bottom: 6px; 
+        justify-content: center; /* Center edge dots */
+    }
+    .edge-dot { width: 10px; height: 10px; } /* Smaller dots */
+
+    .card-stats {
+      display: grid;
+      grid-template-columns: 1fr; /* Stack stats */
+      gap: 3px; /* Reduced gap */
+      font-size: 0.75rem; /* Adjusted font size */
+    }
+    .stat { display: flex; justify-content: space-between; /* Label left, value right */ }
+    .stat-label { color: var(--text-secondary); }
+    .stat-value { color: var(--text-primary); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+
+    .edge-dot.fire { background: #EF4444; } .edge-dot.water { background: #3B82F6; }
+    .edge-dot.earth { background: #10B981; } .edge-dot.air { background: #F59E0B; }
+    .edge-dot.light { background: #F9FAFB; } .edge-dot.dark { background: #1F2937; }
+
+    .sidebar { /* Styles already defined above */ }
+    .stats-panel { margin-bottom: 25px; }
+    .stats-title { font-size: 1.3rem; font-weight: 600; color: var(--accent-cyan); margin-bottom: 20px; text-align: center; }
+    .stat-row { display: flex; justify-content: space-between; margin-bottom: 12px; padding: 8px 0; border-bottom: 1px solid rgba(92, 225, 230, 0.2); }
+    .stat-row:last-child { border-bottom: none; }
+    .advanced-stats { background: rgba(92, 225, 230, 0.05); border-radius: 8px; padding: 15px; margin-top: 20px; }
+    .effects-panel { background: rgba(139, 92, 246, 0.05); border-radius: 8px; padding: 15px; margin-top: 20px; }
+    .effect-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
+    .progress-ring { width: 120px; height: 120px; margin: 20px auto; position: relative; }
+    .progress-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .progress-ring circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+    .progress-ring .bg { stroke: var(--bg-secondary); }
+    .progress-ring .progress { stroke: var(--accent-cyan); stroke-dasharray: 314; stroke-dashoffset: 314; transition: stroke-dashoffset 0.5s ease; }
+    .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.2rem; font-weight: 600; color: var(--accent-cyan); }
+
+    @media (max-width: 992px) { /* Adjusted breakpoint for stacking bottom panels */
+      .bottom-panels {
+        flex-direction: column;
+        align-items: center; 
+      }
+      .card-inventory, .sidebar {
+        width: 90%; 
+        max-width: 500px; 
+        flex-basis: auto; /* Reset flex-basis */
+      }
+       .hex-forge {
+        width: 400px; 
+        height: 400px;
+      }
+      /* Socket positions are absolute and might need JS adjustment for smaller hex-forge,
+         or scale the whole .hex-forge container if precise relative positioning is key.
+         For now, connection lines JS will adapt. */
+    }
+
+    @media (max-width: 768px) {
+      .hex-forge {
+        width: 320px; /* Adjusted for better fit with smaller sockets */
+        height: 320px;
+      }
+      .socket {
+        width: 75px; 
+        height: 86.25px; /* Maintain aspect ratio (115/100 * 75) */
+        font-size: 0.65rem;
+        outline-width: 2px;
+        outline-offset: -2px;
+      }
+       /* Recalculate socket positions for 320x320 forge and 75x86.25 sockets */
+      /* R_layout should be smaller, e.g., 100px. FC = 160,160. SW=75, SH=86.25 */
+      /* Socket 0 (Top) */
+      .socket:nth-child(1) { top: calc(160px - 100px - 86.25px / 2); /* FCY - R - SH/2 */ }
+      /* Socket 1 (Top-Right) */
+      .socket:nth-child(2) { top: calc(160px - 100px * 0.5 - 86.25px / 2); left: calc(160px + 100px * 0.866 - 75px / 2); }
+      /* Socket 2 (Bottom-Right) */
+      .socket:nth-child(3) { top: calc(160px + 100px * 0.5 - 86.25px / 2); left: calc(160px + 100px * 0.866 - 75px / 2); }
+      /* Socket 3 (Bottom) */
+      .socket:nth-child(4) { top: calc(160px + 100px - 86.25px / 2); }
+      /* Socket 4 (Bottom-Left) */
+      .socket:nth-child(5) { top: calc(160px + 100px * 0.5 - 86.25px / 2); left: calc(160px - 100px * 0.866 - 75px / 2); }
+      /* Socket 5 (Top-Left) */
+      .socket:nth-child(6) { top: calc(160px - 100px * 0.5 - 86.25px / 2); left: calc(160px - 100px * 0.866 - 75px / 2); }
+      
+      .center-forge { width: 70px; height: 70px; }
+      .center-eye { width: 45px; height: 45px; }
+      .center-eye::after { width: 18px; height: 18px; }
+
+      .card { width: 180px; height: 207px; padding: 15px 5px;} /* Scale down cards */
+      .card-name { font-size: 0.8rem; }
+      .card-type { font-size: 0.7rem; }
+      .edge-dot { width: 8px; height: 8px; }
+      .card-stats { font-size: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>HexCard Forge</h1>
+      <p class="subtitle">Advanced Features Demo - Experience the full power of the forge</p>
+     
+      <div class="demo-controls">
+        <button class="control-btn" onclick="toggleParticles()">Toggle Particles</button>
+        <button class="control-btn" onclick="resetForge()">Reset Forge</button>
+        <button class="control-btn" onclick="autoPlace()">Auto Place</button>
+        <button class="control-btn" onclick="showValidConnections()">Show Connections</button>
+      </div>
+    </header>
+
+    <div class="demo-layout"> <div class="forge-area">
+        <div class="hex-forge">
+          <div class="socket" data-socket="0">Empty</div>
+          <div class="socket" data-socket="1">Empty</div>
+          <div class="socket" data-socket="2">Empty</div>
+          <div class="socket" data-socket="3">Empty</div>
+          <div class="socket" data-socket="4">Empty</div>
+          <div class="socket" data-socket="5">Empty</div>
+         
+          <div class="center-forge">
+            <div class="center-eye"></div>
+          </div>
+         
+          <div class="connections">
+            <div class="connection-line" data-connection="0-1"></div>
+            <div class="connection-line" data-connection="1-2"></div>
+            <div class="connection-line" data-connection="2-3"></div>
+            <div class="connection-line" data-connection="3-4"></div>
+            <div class="connection-line" data-connection="4-5"></div>
+            <div class="connection-line" data-connection="5-0"></div>
+          </div>
+         
+          <div class="particle-system" id="particles"></div>
+        </div>
+      </div>
+
+      <div class="bottom-panels"> <div class="card-inventory">
+          <div class="inventory-title">Mystical Cards</div>
+          <div class="card-grid" id="card-grid">
+            </div>
+        </div>
+
+        <div class="sidebar">
+          <div class="stats-panel">
+            <div class="stats-title">Forge Status</div>
+            <div class="progress-ring">
+              <svg>
+                <circle class="bg" cx="60" cy="60" r="50"></circle>
+                <circle class="progress" cx="60" cy="60" r="50" id="progress-circle"></circle>
+              </svg>
+              <div class="progress-text" id="progress-text">0%</div>
+            </div>
+            <div class="stat-row"> <span class="stat-label">Total Power</span> <span class="stat-value" id="total-power">0</span> </div>
+            <div class="stat-row"> <span class="stat-label">Cards Placed</span> <span class="stat-value" id="cards-placed">0 / 6</span> </div>
+            <div class="stat-row"> <span class="stat-label">Valid Connections</span> <span class="stat-value" id="connections">0 / 6</span> </div>
+            <div class="advanced-stats">
+              <div class="stat-row"> <span class="stat-label">Fire Synergy</span> <span class="stat-value" id="fire-synergy">0</span> </div>
+              <div class="stat-row"> <span class="stat-label">Water Synergy</span> <span class="stat-value" id="water-synergy">0</span> </div>
+              <div class="stat-row"> <span class="stat-label">Combo Multiplier</span> <span class="stat-value" id="combo-multiplier">1.0x</span> </div>
+            </div>
+          </div>
+          <div class="effects-panel">
+            <div class="stats-title">Active Effects</div>
+            <div id="active-effects"> <div class="effect-item"> <span>None</span> <span>—</span> </div> </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Advanced game state
+    let gameState = {
+      sockets: [null, null, null, null, null, null], 
+      totalPower: 0,
+      placedCards: 0,
+      activeConnections: 0,
+      synergies: { fire: 0, water: 0, earth: 0, air: 0, light: 0, dark: 0 },
+      effects: [],
+      particlesEnabled: true
+    };
+
+    const cardDatabase = [
+      { id: "flame_lord", name: "Flame Lord", type: "Fire Elemental", rarity: "legendary", power: 8, edges: ["fire", "fire", "light", "fire", "earth", "fire"], stats: { attack: 6, defense: 2, magic: 4, speed: 3 } },
+      { id: "frost_mage", name: "Frost Mage", type: "Ice Caster", rarity: "epic", power: 6, edges: ["water", "water", "air", "water", "dark", "water"], stats: { attack: 2, defense: 4, magic: 6, speed: 4 } },
+      { id: "earth_guardian", name: "Earth Guardian", type: "Stone Defender", rarity: "rare", power: 7, edges: ["earth", "earth", "earth", "light", "earth", "fire"], stats: { attack: 3, defense: 8, magic: 2, speed: 1 } },
+      { id: "wind_dancer", name: "Wind Dancer", type: "Air Spirit", rarity: "rare", power: 5, edges: ["air", "air", "light", "air", "water", "air"], stats: { attack: 4, defense: 2, magic: 3, speed: 8 } },
+      { id: "shadow_assassin", name: "Shadow Assassin", type: "Dark Rogue", rarity: "epic", power: 6, edges: ["dark", "air", "dark", "dark", "fire", "dark"], stats: { attack: 7, defense: 2, magic: 3, speed: 6 } },
+      { id: "light_paladin", name: "Light Paladin", type: "Holy Warrior", rarity: "epic", power: 7, edges: ["light", "light", "fire", "light", "earth", "light"], stats: { attack: 5, defense: 6, magic: 4, speed: 3 } },
+      { id: "storm_caller", name: "Storm Caller", type: "Weather Mage", rarity: "legendary", power: 9, edges: ["air", "water", "air", "water", "light", "air"], stats: { attack: 4, defense: 3, magic: 8, speed: 5 } },
+      { id: "void_walker", name: "Void Walker", type: "Dark Mystic", rarity: "legendary", power: 8, edges: ["dark", "dark", "dark", "air", "dark", "water"], stats: { attack: 5, defense: 4, magic: 7, speed: 4 } }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      generateCards();
+      initializeDragAndDrop();
+      performFullUpdate(); // Includes UI and connection visuals
+      createParticles();
+      // Ensure initial positioning of lines is correct after layout might take a moment to settle
+      setTimeout(positionConnectionLines, 100); 
+    });
+
+    function generateCards() {
+      const cardGrid = document.getElementById('card-grid');
+      cardGrid.innerHTML = ''; 
+      cardDatabase.forEach((cardData, index) => {
+        const card = createCardElement(cardData, cardData.id || `card-${index}`); 
+        cardGrid.appendChild(card);
+      });
+    }
+
+    function createCardElement(cardData, cardId) {
+      const card = document.createElement('div');
+      card.className = `card ${cardData.rarity}`;
+      card.dataset.cardId = cardId; 
+     
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="card-name">${cardData.name}</div>
+          <div class="card-rarity ${cardData.rarity}">${cardData.rarity.toUpperCase()}</div>
+        </div>
+        <div class="card-type">${cardData.type.toUpperCase()}</div>
+        <div class="card-edges">
+          ${cardData.edges.map(edge => `<div class="edge-dot ${edge}"></div>`).join('')}
+        </div>
+        <div class="card-stats">
+          <div class="stat"> <span class="stat-label">ATK</span> <span class="stat-value">${cardData.stats.attack}</span> </div>
+          <div class="stat"> <span class="stat-label">DEF</span> <span class="stat-value">${cardData.stats.defense}</span> </div>
+          <div class="stat"> <span class="stat-label">MAG</span> <span class="stat-value">${cardData.stats.magic}</span> </div>
+          <div class="stat"> <span class="stat-label">SPD</span> <span class="stat-value">${cardData.stats.speed}</span> </div>
+        </div>
+      `;
+      return card;
+    }
+
+    function initializeDragAndDrop() {
+      interact('.card:not(.placed)').draggable({
+        inertia: true,
+        modifiers: [ interact.modifiers.restrictRect({ restriction: 'parent', endOnly: true }) ],
+        autoScroll: true,
+        listeners: {
+          start(event) {
+            event.target.classList.add('dragging');
+          },
+          move(event) {
+            const target = event.target;
+            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            target.style.transform = `translate(${x}px, ${y}px) rotate(5deg) scale(1.1)`;
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+          },
+          end(event) {
+            const element = event.target;
+            element.classList.remove('dragging');
+            document.querySelectorAll('.socket').forEach(socket => {
+              socket.classList.remove('drop-target', 'valid-connection', 'invalid-connection');
+            });
+            if (!element.classList.contains('placed')) {
+                element.style.transform = ''; 
+                element.removeAttribute('data-x');
+                element.removeAttribute('data-y');
+            }
+          }
+        }
+      });
+
+      interact('.socket').dropzone({ 
+        accept: '.card:not(.placed)', 
+        overlap: 0.5, 
+        ondragenter(event) {
+          if (!event.target.classList.contains('filled')) { 
+            event.target.classList.add('drop-target');
+          }
+        },
+        ondragleave(event) {
+          event.target.classList.remove('drop-target', 'valid-connection', 'invalid-connection');
+        },
+        ondrop(event) {
+          const socketEl = event.target;
+          const cardEl = event.relatedTarget;
+          const socketIndex = parseInt(socketEl.dataset.socket);
+          const cardId = cardEl.dataset.cardId;
+          const cardData = cardDatabase.find(c => (c.id || `card-${cardDatabase.indexOf(c)}`) === cardId);
+
+          if (cardData) {
+            if (gameState.sockets[socketIndex]) {
+              const oldCardData = gameState.sockets[socketIndex];
+              const oldCardInInventory = document.querySelector(`.card[data-card-id="${oldCardData.id}"]`);
+              if (oldCardInInventory) {
+                oldCardInInventory.classList.remove('placed');
+                oldCardInInventory.style.transform = ''; 
+              }
+            }
+            placeCardInSocket(cardEl, cardData, socketEl, socketIndex);
+          }
+          socketEl.classList.remove('drop-target');
+        }
+      });
+    }
+    
+    function placeCardInSocket(cardElement, cardData, socketElement, socketIndex) {
+      gameState.sockets[socketIndex] = { ...cardData, originalElement: cardElement }; 
+      socketElement.innerHTML = `
+        <div style="font-size: 0.7rem; text-align: center; line-height: 1.2;">
+          <div style="font-weight: 600;">${cardData.name}</div>
+          <div style="color: var(--accent-gold); font-size: 0.6rem;">${cardData.type.toUpperCase()}</div>
+          <div style="color: var(--text-secondary); font-size: 0.6rem;">PWR: ${cardData.power}</div>
+        </div>`;
+      socketElement.classList.add('filled');
+      socketElement.classList.remove('drop-target', 'valid-connection', 'invalid-connection');
+      cardElement.classList.add('placed');
+      cardElement.style.transform = ''; 
+      cardElement.removeAttribute('data-x');
+      cardElement.removeAttribute('data-y');
+      performFullUpdate();
+      socketElement.style.transform = 'scale(1.3) translateZ(40px)';
+      setTimeout(() => {
+        socketElement.style.transform = socketElement.classList.contains('filled') ? 'scale(1.05)' : '';
+      }, 400);
+      if (gameState.particlesEnabled) createPlacementParticles(socketElement);
+    }
+    
+    function checkEdgeCompatibility(card1Data, card2Data, socket1Index, socket2Index) {
+        let edgeIndexOfCard1, edgeIndexOfCard2;
+        const s1_to_s2_edge_map = [1, 2, 3, 4, 5, 0]; 
+        const s2_to_s1_edge_map = [4, 5, 0, 1, 2, 3]; 
+
+        if (socket2Index === (socket1Index + 1) % 6) { 
+            edgeIndexOfCard1 = s1_to_s2_edge_map[socket1Index];
+            edgeIndexOfCard2 = s2_to_s1_edge_map[socket2Index];
+        } else if (socket1Index === (socket2Index + 1) % 6) { 
+            edgeIndexOfCard1 = s2_to_s1_edge_map[socket1Index]; 
+            edgeIndexOfCard2 = s1_to_s2_edge_map[socket2Index]; 
+        } else { return false; }
+
+        const edge1Type = card1Data.edges[edgeIndexOfCard1];
+        const edge2Type = card2Data.edges[edgeIndexOfCard2];
+        
+        // Using original compatibility rules from previous version for consistency
+        const compatibility = {
+           'fire': ['fire', 'earth'],
+           'water': ['water', 'air'],
+           'earth': ['earth', 'fire'],
+           'air': ['air', 'water'],
+           'light': ['light', 'dark'],
+           'dark': ['dark', 'light']
+        };
+
+        if (compatibility[edge1Type] && compatibility[edge1Type].includes(edge2Type)) return true;
+        if (compatibility[edge2Type] && compatibility[edge2Type].includes(edge1Type)) return true; // Symmetric check
+        return false;
+    }
+
+    function updateConnectionsStateAndVisuals() {
+      let validConnectionCount = 0;
+      const connectionPairs = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,0]]; 
+      connectionPairs.forEach(pair => {
+        const s1Index = pair[0], s2Index = pair[1];
+        let line = document.querySelector(`.connection-line[data-connection="${s1Index}-${s2Index}"]`);
+        if (!line) line = document.querySelector(`.connection-line[data-connection="${s2Index}-${s1Index}"]`);
+        if (!line) return;
+
+        const card1 = gameState.sockets[s1Index], card2 = gameState.sockets[s2Index];
+        if (card1 && card2) {
+          const isValid = checkEdgeCompatibility(card1, card2, s1Index, s2Index);
+          line.classList.toggle('active', isValid);
+          line.classList.toggle('invalid', !isValid);
+          if (isValid) validConnectionCount++;
+        } else {
+          line.classList.remove('active', 'invalid');
+        }
+      });
+      gameState.activeConnections = validConnectionCount;
+      positionConnectionLines(); 
+    }
+
+    function updateStatsLogic() {
+      gameState.placedCards = gameState.sockets.filter(s => s !== null).length;
+      gameState.totalPower = gameState.sockets.reduce((sum, s) => sum + (s ? s.power : 0), 0);
+      Object.keys(gameState.synergies).forEach(key => gameState.synergies[key] = 0);
+      gameState.sockets.forEach(socket => {
+        if (socket) socket.edges.forEach(edge => { if (gameState.synergies[edge] !== undefined) gameState.synergies[edge]++; });
+      });
+      gameState.effects = [];
+      if (gameState.synergies.fire >= 6) gameState.effects.push({ name: "Minor Inferno", value: "+10% Fire PWR" });
+      if (gameState.activeConnections === 6) gameState.effects.push({ name: "Full Link", value: "+20% All PWR" });
+      if (gameState.placedCards === 6 && gameState.activeConnections === 6) gameState.effects.push({ name: "Perfect Forge", value: "Ultimate Power!" });
+    }
+
+    function updateStatsUI() {
+      document.getElementById('total-power').textContent = gameState.totalPower;
+      document.getElementById('cards-placed').textContent = `${gameState.placedCards} / 6`;
+      document.getElementById('connections').textContent = `${gameState.activeConnections} / 6`;
+      const progressPercent = (gameState.placedCards / 6) * 100;
+      const progressCircle = document.getElementById('progress-circle');
+      const circumference = parseFloat(progressCircle.getAttribute('r')) * 2 * Math.PI;
+      progressCircle.style.strokeDashoffset = circumference - (progressPercent / 100) * circumference;
+      document.getElementById('progress-text').textContent = `${Math.round(progressPercent)}%`;
+      document.getElementById('fire-synergy').textContent = gameState.synergies.fire;
+      document.getElementById('water-synergy').textContent = gameState.synergies.water;
+      const totalSynergyPoints = Object.values(gameState.synergies).reduce((s, v) => s + v, 0);
+      const multiplier = 1 + (totalSynergyPoints * 0.01) + (gameState.activeConnections * 0.05); 
+      document.getElementById('combo-multiplier').textContent = `${multiplier.toFixed(1)}x`;
+      const effectsContainer = document.getElementById('active-effects');
+      effectsContainer.innerHTML = gameState.effects.length === 0 ? 
+        '<div class="effect-item"><span>None</span><span>—</span></div>' : 
+        gameState.effects.map(e => `<div class="effect-item"><span>${e.name}</span><span>${e.value}</span></div>`).join('');
+    }
+    
+    function performFullUpdate() {
+        updateConnectionsStateAndVisuals(); 
+        updateStatsLogic();
+        updateStatsUI();
+    }
+
+    function positionConnectionLines() {
+      const forge = document.querySelector('.hex-forge');
+      const sockets = document.querySelectorAll('.socket'); 
+      if (!forge || sockets.length !== 6) return; 
+      const forgeRect = forge.getBoundingClientRect();
+      const connectionPairs = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,0]];
+      connectionPairs.forEach(pair => {
+        const s1Index = pair[0], s2Index = pair[1];
+        let line = document.querySelector(`.connection-line[data-connection="${s1Index}-${s2Index}"]`) || document.querySelector(`.connection-line[data-connection="${s2Index}-${s1Index}"]`);
+        if (!line) return; 
+        const socket1El = sockets[s1Index], socket2El = sockets[s2Index];
+        if (socket1El && socket2El) {
+          const s1Rect = socket1El.getBoundingClientRect(), s2Rect = socket2El.getBoundingClientRect();
+          const x1 = s1Rect.left + s1Rect.width / 2 - forgeRect.left;
+          const y1 = s1Rect.top + s1Rect.height / 2 - forgeRect.top;
+          const x2 = s2Rect.left + s2Rect.width / 2 - forgeRect.left;
+          const y2 = s2Rect.top + s2Rect.height / 2 - forgeRect.top;
+          const length = Math.sqrt((x2 - x1)**2 + (y2 - y1)**2);
+          const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+          line.style.width = `${length}px`;
+          line.style.left = `${x1}px`;
+          line.style.top = `${y1}px`;
+          line.style.transform = `rotate(${angle}deg)`;
+          line.style.transformOrigin = '0 50%'; 
+        }
+      });
+    }
+    
+    window.addEventListener('resize', positionConnectionLines);
+
+    function createParticles() {
+      const particleSystem = document.getElementById('particles');
+      if (!particleSystem) return;
+      particleSystem.innerHTML = ''; 
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 3 + 's';
+        particle.style.animationDuration = (2 + Math.random() * 2) + 's';
+        const colors = ['var(--accent-cyan)', 'var(--accent-gold)', 'var(--accent-purple)'];
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        particleSystem.appendChild(particle);
+      }
+    }
+
+    function createPlacementParticles(socketElement) {
+      const particleSystem = document.getElementById('particles');
+      if (!particleSystem || !socketElement) return;
+      const socketRect = socketElement.getBoundingClientRect();
+      const forgeRect = document.querySelector('.hex-forge').getBoundingClientRect();
+      const startX = socketRect.left + socketRect.width / 2 - forgeRect.left;
+      const startY = socketRect.top + socketRect.height / 2 - forgeRect.top;
+      for (let i = 0; i < 15; i++) { 
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = `${2 + Math.random() * 3}px`; 
+        particle.style.height = particle.style.width;
+        particle.style.borderRadius = '50%';
+        particle.style.background = ['var(--accent-gold)', 'var(--accent-cyan)', 'white'][Math.floor(Math.random()*3)];
+        particle.style.left = `${startX}px`;
+        particle.style.top = `${startY}px`;
+        particle.style.opacity = 1;
+        particleSystem.appendChild(particle);
+        const angle = Math.random() * Math.PI * 2; 
+        const distance = 30 + Math.random() * 70; 
+        const endX = Math.cos(angle) * distance;
+        const endY = Math.sin(angle) * distance;
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${endX}px, ${endY}px) scale(0)`, opacity: 0 }
+        ], { duration: 600 + Math.random() * 400, easing: 'cubic-bezier(0.25, 1, 0.5, 1)' }
+        ).onfinish = () => particle.remove();
+      }
+    }
+
+    function toggleParticles() {
+      gameState.particlesEnabled = !gameState.particlesEnabled;
+      const particleSystem = document.getElementById('particles');
+      if (particleSystem) {
+        particleSystem.style.display = gameState.particlesEnabled ? 'block' : 'none';
+        if (gameState.particlesEnabled && particleSystem.children.length === 0) createParticles(); 
+      }
+    }
+
+    function resetForge() {
+      gameState.sockets = [null, null, null, null, null, null];
+      document.querySelectorAll('.socket').forEach(socketEl => {
+        socketEl.innerHTML = 'Empty';
+        socketEl.classList.remove('filled', 'valid-connection', 'invalid-connection');
+        socketEl.style.transform = ''; 
+      });
+      document.querySelectorAll('.card.placed').forEach(cardEl => cardEl.classList.remove('placed'));
+      performFullUpdate(); 
+      if (gameState.particlesEnabled) createParticles(); 
+    }
+
+    function autoPlace() {
+        resetForge(); 
+        const availableCards = [...cardDatabase]; 
+        const sockets = Array.from(document.querySelectorAll('.socket'));
+        for (let i = 0; i < 6; i++) {
+            if (availableCards.length > 0 && sockets[i]) {
+                const cardToPlaceData = availableCards.shift(); 
+                const cardToPlaceElement = document.querySelector(`.card[data-card-id="${cardToPlaceData.id || `card-${cardDatabase.indexOf(cardToPlaceData)}`}"]`);
+                if (cardToPlaceElement && !cardToPlaceElement.classList.contains('placed')) {
+                   placeCardInSocket(cardToPlaceElement, cardToPlaceData, sockets[i], i);
+                }
+            }
+        }
+        // performFullUpdate(); // Already called in placeCardInSocket
+    }
+
+    function showValidConnections() {
+      document.querySelectorAll('.connection-line').forEach(line => {
+        const originalOpacity = getComputedStyle(line).opacity; // Get current actual opacity
+        line.style.transition = 'opacity 0.2s ease-in-out';
+        line.style.opacity = '0.3'; 
+        setTimeout(() => { line.style.opacity = originalOpacity; }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>
+```
+Key changes made:
+
+* **HTML Structure:**
+    * The `.forge-area` is now the first child of `.demo-layout`.
+    * `.card-inventory` and `.sidebar` are wrapped in a new `<div class="bottom-panels">`.
+* **CSS Styling:**
+    * `.demo-layout` uses flexbox to arrange `.forge-area` on top and `.bottom-panels` below.
+    * `.bottom-panels` uses flexbox to arrange inventory and sidebar in a row.
+    * `.card` elements now have a `clip-path` for a hexagonal shape, adjusted `width`, `height`, and `padding`.
+    * Card borders are replaced with `outline`.
+    * Card hover effects use `filter: drop-shadow()` for the shadow.
+    * Internal content of cards (`.card-name`, `.card-stats`, etc.) has been slightly resized/rearranged to fit the hexagon.
+    * Socket styling was also switched from `border` to `outline` and `box-shadow` to `filter: drop-shadow()` for consistency and better visual effect with clipping.
+    * Responsive styles (`@media` queries) were updated to handle the new layout and ensure the forge remains at the top, with bottom panels stacking vertically on smaller screens. The socket positions within the forge for the smallest screen size (`@media (max-width: 768px)`) have been recalculated using CSS `calc()` for better adaptability to the smaller forge size.
+
+I've tried to keep the JavaScript logic for game mechanics and interactions the same, as the changes are primarily visual. The `positionConnectionLines` function should still work correctly as it relies on the elements' `getBoundingClientRect()`.
+I also made minor adjustments to the card content font sizes and spacing to better fit the new hexagonal shape.
+The `checkEdgeCompatibility` function is using the original logic from the prior version you provided, which assumes a specific mapping of card edges to socket adjacencies. If a different mapping is intended (e.g., card rotation), that function would need a more detailed revi

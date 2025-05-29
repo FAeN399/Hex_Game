@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HexCard Forge - Accessibility Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: #4fc3f7;
+            color: #000;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 1000;
+        }
+
+        .skip-link:focus {
+            top: 6px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #4fc3f7;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #81c784;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .forge-container {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .forge-grid {
+            display: grid;
+            grid-template-columns: 1fr 100px 1fr;
+            grid-template-rows: 100px 100px 100px;
+            gap: 15px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .forge-socket {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(45deg, #2196f3, #21cbf3);
+            border: 3px solid #4fc3f7;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .forge-socket:nth-child(1) { grid-area: 1 / 2 / 2 / 3; } /* Top */
+        .forge-socket:nth-child(2) { grid-area: 2 / 1 / 3 / 2; } /* Top-left */
+        .forge-socket:nth-child(3) { grid-area: 2 / 3 / 3 / 4; } /* Top-right */
+        .forge-socket:nth-child(4) { grid-area: 3 / 1 / 4 / 2; } /* Bottom-left */
+        .forge-socket:nth-child(5) { grid-area: 3 / 3 / 4 / 4; } /* Bottom-right */
+        .forge-socket:nth-child(6) { grid-area: 4 / 2 / 5 / 3; } /* Bottom */
+
+        .forge-center {
+            grid-area: 2 / 2 / 3 / 3;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #ffd700, #ffb300);
+            border: 3px solid #ff6f00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            z-index: 10;
+        }
+
+        .forge-socket:focus {
+            outline: 3px solid #ffc107;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 6px rgba(255, 193, 7, 0.3);
+        }
+
+        .forge-socket.has-card {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            border-color: #81c784;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .forge-socket.selected {
+            background: linear-gradient(45deg, #ff9800, #ffb74d);
+            border-color: #ffc107;
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+        }
+
+        .socket-label {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .socket-content {
+            font-size: 0.7rem;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .card-inventory {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .accessible-card {
+            background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+            border: 3px solid #ba68c8;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            text-align: center;
+        }
+
+        .accessible-card:focus {
+            outline: 3px solid #ffc107;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 6px rgba(255, 193, 7, 0.3);
+        }
+
+        .accessible-card:hover,
+        .accessible-card.selected {
+            background: linear-gradient(135deg, #8e24aa, #ab47bc);
+            border-color: #ce93d8;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .accessible-card.used {
+            opacity: 0.4;
+            pointer-events: none;
+            filter: grayscale(100%);
+        }
+
+        .card-name {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .card-details {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .card-power {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4fc3f7;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .accessible-btn {
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #2196f3, #21cbf3);
+            border: 2px solid #4fc3f7;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .accessible-btn:focus {
+            outline: 3px solid #ffc107;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 6px rgba(255, 193, 7, 0.3);
+        }
+
+        .accessible-btn:hover {
+            background: linear-gradient(45deg, #1976d2, #0288d1);
+            transform: translateY(-2px);
+        }
+
+        .accessible-btn.reset {
+            background: linear-gradient(45deg, #f44336, #ef5350);
+            border-color: #f44336;
+        }
+
+        .accessible-btn.reset:hover {
+            background: linear-gradient(45deg, #d32f2f, #c62828);
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .instructions h3 {
+            color: #81c784;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .instructions li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .live-region {
+            position: absolute;
+            left: -10000px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+
+        .connection-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .connection-line {
+            stroke: #4caf50;
+            stroke-width: 3;
+            opacity: 0.7;
+            filter: drop-shadow(0 0 5px #4caf50);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .forge-grid {
+                grid-template-columns: 1fr 80px 1fr;
+                grid-template-rows: 80px 80px 80px;
+                gap: 10px;
+            }
+
+            .forge-socket {
+                width: 70px;
+                height: 70px;
+            }
+
+            .forge-center {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="header">
+        <h1>HexCard Forge - Accessibility Demo</h1>
+        <p>Fully accessible forge interface with keyboard navigation and screen reader support</p>
+    </header>
+
+    <main id="main-content" class="main-container">
+        <section class="section">
+            <h2>
+                <span aria-hidden="true">⚡</span>
+                Forge Arena
+            </h2>
+
+            <div class="instructions">
+                <h3>Keyboard Controls:</h3>
+                <ul>
+                    <li><strong>Tab/Shift+Tab:</strong> Navigate between elements</li>
+                    <li><strong>Space/Enter:</strong> Select cards and sockets</li>
+                    <li><strong>Arrow Keys:</strong> Navigate forge sockets</li>
+                    <li><strong>Escape:</strong> Cancel current selection</li>
+                    <li><strong>1-6 Keys:</strong> Jump to specific socket</li>
+                </ul>
+            </div>
+
+            <div class="forge-container">
+                <div class="forge-grid" role="grid" aria-label="Hexagonal forge with 6 sockets">
+                    <svg class="connection-lines" aria-hidden="true">
+                        <!-- Connection lines will be drawn here -->
+                    </svg>
+                    
+                    <div class="forge-socket" tabindex="0" role="gridcell" 
+                         data-socket="0" aria-label="Socket 1 - Top position">
+                        <div class="socket-label">Socket 1</div>
+                        <div class="socket-content" aria-live="polite">Empty</div>
+                    </div>
+                    
+                    <div class="forge-socket" tabindex="0" role="gridcell" 
+                         data-socket="1" aria-label="Socket 2 - Top-left position">
+                        <div class="socket-label">Socket 2</div>
+                        <div class="socket-content" aria-live="polite">Empty</div>
+                    </div>
+                    
+                    <div class="forge-socket" tabindex="0" role="gridcell" 
+                         data-socket="2" aria-label="Socket 3 - Top-right position">
+                        <div class="socket-label">Socket 3</div>
+                        <div class="socket-content" aria-live="polite">Empty</div>
+                    </div>
+                    
+                    <div class="forge-socket" tabindex="0" role="gridcell" 
+                         data-socket="3" aria-label="Socket 4 - Bottom-left position">
+                        <div class="socket-label">Socket 4</div>
+                        <div class="socket-content" aria-live="polite">Empty</div>
+                    </div>
+                    
+                    <div class="forge-socket" tabindex="0" role="gridcell" 
+                         data-socket="4" aria-label="Socket 5 - Bottom-right position">
+                        <div class="socket-label">Socket 5</div>
+                        <div class="socket-content" aria-live="polite">Empty</div>
+                    </div>
+                    
+                    <div class="forge-socket" tabindex="0" role="gridcell" 
+                         data-socket="5" aria-label="Socket 6 - Bottom position">
+                        <div class="socket-label">Socket 6</div>
+                        <div class="socket-content" aria-live="polite">Empty</div>
+                    </div>
+                    
+                    <div class="forge-center" aria-label="Forge center - The eye of power">
+                        <span aria-hidden="true">👁️</span>
+                        <span class="sr-only">Forge center active</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid" role="region" aria-label="Forge statistics">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalPower" aria-live="polite">0</span>
+                    <div class="stat-label">Total Power</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="cardsPlaced" aria-live="polite">0</span>
+                    <div class="stat-label">Cards Placed</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="connections" aria-live="polite">0</span>
+                    <div class="stat-label">Connections</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="multiplier" aria-live="polite">1.0x</span>
+                    <div class="stat-label">Multiplier</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>
+                <span aria-hidden="true">🎴</span>
+                Card Inventory
+            </h2>
+
+            <div class="card-inventory" role="region" aria-label="Available cards for forging">
+                <!-- Cards will be populated by JavaScript -->
+            </div>
+
+            <div class="controls">
+                <button class="accessible-btn" id="autoPlaceBtn" 
+                        aria-describedby="auto-place-help">
+                    Auto Place Cards
+                </button>
+                <button class="accessible-btn reset" id="resetBtn" 
+                        aria-describedby="reset-help">
+                    Reset Forge
+                </button>
+                <button class="accessible-btn" id="helpBtn">
+                    Show Help
+                </button>
+            </div>
+
+            <div id="auto-place-help" class="sr-only">
+                Automatically places available cards in empty sockets
+            </div>
+            <div id="reset-help" class="sr-only">
+                Removes all cards from the forge and returns them to inventory
+            </div>
+        </section>
+    </main>
+
+    <!-- Live regions for screen reader announcements -->
+    <div class="live-region" aria-live="assertive" id="announcements"></div>
+    <div class="live-region" aria-live="polite" id="status"></div>
+
+    <script>
+        class AccessibleForgeDemo {
+            constructor() {
+                this.sockets = Array(6).fill(null);
+                this.cards = [
+                    { id: 1, name: 'Fire Knight', type: 'Warrior', power: 85, element: 'fire', description: 'A mighty warrior wielding flames' },
+                    { id: 2, name: 'Ice Mage', type: 'Mage', power: 75, element: 'ice', description: 'Master of frozen magic' },
+                    { id: 3, name: 'Earth Guardian', type: 'Tank', power: 90, element: 'earth', description: 'Protector of the realm' },
+                    { id: 4, name: 'Wind Archer', type: 'Archer', power: 70, element: 'wind', description: 'Swift arrows guided by wind' },
+                    { id: 5, name: 'Light Healer', type: 'Healer', power: 65, element: 'light', description: 'Brings healing and hope' },
+                    { id: 6, name: 'Shadow Rogue', type: 'Rogue', power: 80, element: 'dark', description: 'Strikes from the shadows' },
+                ];
+                this.usedCards = new Set();
+                this.selectedCard = null;
+                this.focusedSocket = null;
+
+                this.init();
+            }
+
+            init() {
+                this.createCards();
+                this.setupEventListeners();
+                this.updateStats();
+                this.announce('Forge demo loaded. Use Tab to navigate, Space to select cards and sockets.');
+            }
+
+            createCards() {
+                const inventory = document.querySelector('.card-inventory');
+                inventory.innerHTML = '';
+
+                this.cards.forEach(card => {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'accessible-card';
+                    cardElement.tabIndex = 0;
+                    cardElement.setAttribute('role', 'button');
+                    cardElement.setAttribute('data-card-id', card.id);
+                    cardElement.setAttribute('aria-label', 
+                        `${card.name}, ${card.type}, Power ${card.power}, ${card.element} element. ${card.description}`);
+                    
+                    cardElement.innerHTML = `
+                        <div class="card-name">${card.name}</div>
+                        <div class="card-details">${card.type} • ${card.element}</div>
+                        <div class="card-power">Power: ${card.power}</div>
+                    `;
+
+                    cardElement.addEventListener('click', () => this.selectCard(card));
+                    cardElement.addEventListener('keydown', (e) => this.handleCardKeydown(e, card));
+
+                    inventory.appendChild(cardElement);
+                });
+            }
+
+            setupEventListeners() {
+                // Socket event listeners
+                document.querySelectorAll('.forge-socket').forEach((socket, index) => {
+                    socket.addEventListener('click', () => this.handleSocketClick(index));
+                    socket.addEventListener('keydown', (e) => this.handleSocketKeydown(e, index));
+                });
+
+                // Global keyboard listeners
+                document.addEventListener('keydown', this.handleGlobalKeydown.bind(this));
+
+                // Button event listeners
+                document.getElementById('autoPlaceBtn').addEventListener('click', this.autoPlace.bind(this));
+                document.getElementById('resetBtn').addEventListener('click', this.reset.bind(this));
+                document.getElementById('helpBtn').addEventListener('click', this.showHelp.bind(this));
+            }
+
+            handleCardKeydown(e, card) {
+                switch(e.key) {
+                    case ' ':
+                    case 'Enter':
+                        e.preventDefault();
+                        this.selectCard(card);
+                        break;
+                }
+            }
+
+            handleSocketKeydown(e, socketIndex) {
+                switch(e.key) {
+                    case ' ':
+                    case 'Enter':
+                        e.preventDefault();
+                        this.handleSocketClick(socketIndex);
+                        break;
+                    case 'ArrowUp':
+                    case 'ArrowDown':
+                    case 'ArrowLeft':
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        this.navigateSockets(e.key, socketIndex);
+                        break;
+                }
+            }
+
+            handleGlobalKeydown(e) {
+                // Number keys 1-6 to jump to sockets
+                if (e.key >= '1' && e.key <= '6') {
+                    e.preventDefault();
+                    const socketIndex = parseInt(e.key) - 1;
+                    const socket = document.querySelector(`[data-socket="${socketIndex}"]`);
+                    socket.focus();
+                    this.announce(`Focused on socket ${e.key}`);
+                }
+
+                // Escape to cancel selection
+                if (e.key === 'Escape') {
+                    this.cancelSelection();
+                }
+            }
+
+            navigateSockets(direction, currentIndex) {
+                const navigation = {
+                    0: { ArrowDown: 1, ArrowLeft: 5 }, // Top
+                    1: { ArrowUp: 0, ArrowRight: 2, ArrowDown: 3 }, // Top-left
+                    2: { ArrowLeft: 1, ArrowDown: 4 }, // Top-right
+                    3: { ArrowUp: 1, ArrowRight: 4, ArrowDown: 5 }, // Bottom-left
+                    4: { ArrowUp: 2, ArrowLeft: 3, ArrowDown: 5 }, // Bottom-right
+                    5: { ArrowUp: 0, ArrowLeft: 3, ArrowRight: 4 } // Bottom
+                };
+
+                const nextIndex = navigation[currentIndex][direction];
+                if (nextIndex !== undefined) {
+                    const nextSocket = document.querySelector(`[data-socket="${nextIndex}"]`);
+                    nextSocket.focus();
+                }
+            }
+
+            selectCard(card) {
+                if (this.usedCards.has(card.id)) {
+                    this.announce(`${card.name} is already in use`);
+                    return;
+                }
+
+                // Clear previous selection
+                document.querySelectorAll('.accessible-card').forEach(el => 
+                    el.classList.remove('selected'));
+
+                if (this.selectedCard === card) {
+                    // Deselect
+                    this.selectedCard = null;
+                    this.announce('Card deselected');
+                } else {
+                    // Select new card
+                    this.selectedCard = card;
+                    const cardElement = document.querySelector(`[data-card-id="${card.id}"]`);
+                    cardElement.classList.add('selected');
+                    this.announce(`${card.name} selected. Choose a socket to place it.`);
+                    
+                    // Highlight available sockets
+                    this.highlightAvailableSockets();
+                }
+            }
+
+            handleSocketClick(socketIndex) {
+                const socket = document.querySelector(`[data-socket="${socketIndex}"]`);
+                
+                if (this.sockets[socketIndex]) {
+                    // Remove card from socket
+                    this.removeCard(socketIndex);
+                } else if (this.selectedCard) {
+                    // Place selected card in socket
+                    this.placeCard(socketIndex, this.selectedCard);
+                    this.selectedCard = null;
+                    document.querySelectorAll('.accessible-card').forEach(el => 
+                        el.classList.remove('selected'));
+                } else {
+                    this.announce(`Socket ${socketIndex + 1} is empty. Select a card first.`);
+                }
+            }
+
+            placeCard(socketIndex, cardData) {
+                this.sockets[socketIndex] = cardData;
+                this.usedCards.add(cardData.id);
+                
+                // Update visual
+                const socket = document.querySelector(`[data-socket="${socketIndex}"]`);
+                socket.classList.add('has-card');
+                socket.setAttribute('aria-label', 
+                    `Socket ${socketIndex + 1} - Contains ${cardData.name}, ${cardData.type}, Power ${cardData.power}`);
+                
+                const content = socket.querySelector('.socket-content');
+                content.textContent = cardData.name;
+
+                const cardElement = document.querySelector(`[data-card-id="${cardData.id}"]`);
+                cardElement.classList.add('used');
+                cardElement.setAttribute('aria-label', 
+                    `${cardData.name} - Currently placed in socket ${socketIndex + 1}`);
+
+                this.updateStats();
+                this.drawConnections();
+                this.announce(`${cardData.name} placed in socket ${socketIndex + 1}`);
+                this.updateStatus(`${cardData.name} successfully forged into socket ${socketIndex + 1}`);
+            }
+
+            removeCard(socketIndex) {
+                const cardData = this.sockets[socketIndex];
+                if (!cardData) return;
+
+                this.sockets[socketIndex] = null;
+                this.usedCards.delete(cardData.id);
+
+                // Update visual
+                const socket = document.querySelector(`[data-socket="${socketIndex}"]`);
+                socket.classList.remove('has-card');
+                socket.setAttribute('aria-label', `Socket ${socketIndex + 1} - Empty`);
+                
+                const content = socket.querySelector('.socket-content');
+                content.textContent = 'Empty';
+
+                const cardElement = document.querySelector(`[data-card-id="${cardData.id}"]`);
+                cardElement.classList.remove('used');
+                cardElement.setAttribute('aria-label', 
+                    `${cardData.name}, ${cardData.type}, Power ${cardData.power}, ${cardData.element} element. ${cardData.description}`);
+
+                this.updateStats();
+                this.drawConnections();
+                this.announce(`${cardData.name} removed from socket ${socketIndex + 1}`);
+                this.updateStatus(`${cardData.name} returned to inventory`);
+            }
+
+            highlightAvailableSockets() {
+                const availableCount = this.sockets.filter(s => s === null).length;
+                this.updateStatus(`${availableCount} sockets available for placement`);
+            }
+
+            updateStats() {
+                const totalPower = this.sockets.reduce((sum, card) => sum + (card ? card.power : 0), 0);
+                const cardsPlaced = this.sockets.filter(card => card !== null).length;
+                const connections = this.calculateConnections();
+                const multiplier = 1 + (connections * 0.1);
+                const finalPower = Math.round(totalPower * multiplier);
+
+                document.getElementById('totalPower').textContent = finalPower;
+                document.getElementById('cardsPlaced').textContent = cardsPlaced;
+                document.getElementById('connections').textContent = connections;
+                document.getElementById('multiplier').textContent = multiplier.toFixed(1) + 'x';
+
+                // Update aria-labels with context
+                document.getElementById('totalPower').setAttribute('aria-label', 
+                    `Total power: ${finalPower} points`);
+                document.getElementById('cardsPlaced').setAttribute('aria-label', 
+                    `Cards placed: ${cardsPlaced} out of 6 sockets`);
+                document.getElementById('connections').setAttribute('aria-label', 
+                    `Active connections: ${connections}`);
+                document.getElementById('multiplier').setAttribute('aria-label', 
+                    `Power multiplier: ${multiplier.toFixed(1)} times`);
+            }
+
+            calculateConnections() {
+                let connections = 0;
+                const adjacent = [
+                    [1, 5], [0, 2], [1, 3], [2, 4], [3, 5], [4, 0]
+                ];
+
+                for (let i = 0; i < 6; i++) {
+                    if (this.sockets[i]) {
+                        adjacent[i].forEach(neighbor => {
+                            if (this.sockets[neighbor] && i < neighbor) {
+                                connections++;
+                            }
+                        });
+                    }
+                }
+
+                return connections;
+            }
+
+            drawConnections() {
+                const svg = document.querySelector('.connection-lines');
+                svg.innerHTML = '';
+
+                const socketPositions = [
+                    { x: 140, y: 50 },  // Top
+                    { x: 70, y: 125 },  // Top-left
+                    { x: 210, y: 125 }, // Top-right
+                    { x: 70, y: 200 },  // Bottom-left
+                    { x: 210, y: 200 }, // Bottom-right
+                    { x: 140, y: 275 }  // Bottom
+                ];
+
+                const adjacent = [
+                    [1, 5], [0, 2], [1, 3], [2, 4], [3, 5], [4, 0]
+                ];
+
+                let connectionCount = 0;
+                for (let i = 0; i < 6; i++) {
+                    if (this.sockets[i]) {
+                        adjacent[i].forEach(neighbor => {
+                            if (this.sockets[neighbor] && i < neighbor) {
+                                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                                line.setAttribute('x1', socketPositions[i].x);
+                                line.setAttribute('y1', socketPositions[i].y);
+                                line.setAttribute('x2', socketPositions[neighbor].x);
+                                line.setAttribute('y2', socketPositions[neighbor].y);
+                                line.className = 'connection-line';
+                                svg.appendChild(line);
+                                connectionCount++;
+                            }
+                        });
+                    }
+                }
+
+                if (connectionCount > 0) {
+                    this.updateStatus(`${connectionCount} power connections established`);
+                }
+            }
+
+            autoPlace() {
+                const availableCards = this.cards.filter(card => !this.usedCards.has(card.id));
+                const availableSockets = this.sockets.map((socket, index) => 
+                    socket === null ? index : null).filter(i => i !== null);
+
+                const count = Math.min(availableCards.length, availableSockets.length);
+                
+                for (let i = 0; i < count; i++) {
+                    const card = availableCards[i];
+                    const socketIndex = availableSockets[i];
+                    this.placeCard(socketIndex, card);
+                }
+
+                if (count > 0) {
+                    this.announce(`Auto-placed ${count} cards successfully`);
+                } else {
+                    this.announce('No cards available for auto-placement');
+                }
+            }
+
+            reset() {
+                this.sockets.fill(null);
+                this.usedCards.clear();
+                this.selectedCard = null;
+
+                document.querySelectorAll('.forge-socket').forEach((socket, index) => {
+                    socket.classList.remove('has-card');
+                    socket.setAttribute('aria-label', `Socket ${index + 1} - Empty`);
+                    const content = socket.querySelector('.socket-content');
+                    content.textContent = 'Empty';
+                });
+
+                document.querySelectorAll('.accessible-card').forEach((card, index) => {
+                    card.classList.remove('used', 'selected');
+                    const cardData = this.cards[index];
+                    card.setAttribute('aria-label', 
+                        `${cardData.name}, ${cardData.type}, Power ${cardData.power}, ${cardData.element} element. ${cardData.description}`);
+                });
+
+                document.querySelector('.connection-lines').innerHTML = '';
+                this.updateStats();
+                this.announce('Forge reset successfully. All cards returned to inventory.');
+            }
+
+            showHelp() {
+                const helpText = `
+                    Forge Help: 
+                    Use Tab to navigate between cards and sockets. 
+                    Press Space or Enter to select cards and place them in sockets. 
+                    Use number keys 1-6 to jump directly to sockets. 
+                    Press Escape to cancel current selection. 
+                    Use arrow keys to navigate between adjacent sockets.
+                `;
+                this.announce(helpText);
+            }
+
+            cancelSelection() {
+                if (this.selectedCard) {
+                    this.selectedCard = null;
+                    document.querySelectorAll('.accessible-card').forEach(el => 
+                        el.classList.remove('selected'));
+                    this.announce('Selection cancelled');
+                }
+            }
+
+            announce(message) {
+                const announcements = document.getElementById('announcements');
+                announcements.textContent = message;
+                
+                // Clear after announcement to allow repeat announcements
+                setTimeout(() => {
+                    announcements.textContent = '';
+                }, 1000);
+            }
+
+            updateStatus(message) {
+                const status = document.getElementById('status');
+                status.textContent = message;
+            }
+        }
+
+        // Initialize the demo when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new AccessibleForgeDemo();
+        });
+    </script>
+</body>
+</html>

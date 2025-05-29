@@ -1,0 +1,91 @@
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+
+# Project specific
+*.zip
+*.exe
+*.spec
+
+# Python
+.pnpm-store/
+dist/
+build/
+*.py[cod]
+*$py.class
+*.so
+env/
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+.installed.cfg
+
+# IDEs and editors
+*.swp
+*.swo
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Testing
+coverage/
+.nyc_output/
+
+# Production
+out/
+
+# Misc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

@@ -1,0 +1,26 @@
+{
+  "name": "hexcard-forge-nexus",
+  "private": true,
+  "version": "0.0.1",
+  "packageManager": "pnpm@9.15.4",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "pnpm --filter web-client dev",
+    "dev:desktop": "pnpm --filter desktop-studio dev",
+    "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@vitejs/plugin-react": "^4.5.0",
+    "jsdom": "^26.1.0",
+    "vitest": "^3.1.4"
+  },
+  "dependencies": {
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1"
+  }
+}

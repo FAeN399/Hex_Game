@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HexCard Forge Nexus - Arcane Tech Strategy Game</title>
+    <meta name="description" content="Welcome to HexCard Forge Nexus, a dark-themed, arcane-tech card and map strategy game. Explore the style guide for our UI components.">
+    <meta name="keywords" content="HexCard Forge Nexus, strategy game, card game, map editor, arcane, dark theme, UI, style guide">
+    <meta name="theme-color" content="#0E0815">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=IM+Fell+English+SC&family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Design Spell Book & Global Styles --- */
+        :root {
+            /* Core Purples */
+            --violet-abyss: #0E0815;    /* root body bg */
+            --obsidian-petal: #1C0A2D;  /* primary surface */
+            --eld-amethyst: #371A53;    /* elevated cards/panels */
+            --arcane-orchid: #53337A;   /* hovers / focus */
+            --rune-glow: #8151B5;       /* neon accent */
+
+            /* Accents */
+            --ether-cyan: #4BC3EF;      /* links, highlight */
+            --void-magenta: #E85B9E;    /* critical CTA / FX */
+            --gilded-brass: #C7A853;    /* rewards, gold trim */
+
+            /* Semantic */
+            --success: #34C759;
+            --warning: #F0C642;
+            --error: #FF5364;
+            --info: var(--ether-cyan);
+
+            /* Text */
+            --text-primary: #E0D7FF;
+            --text-secondary: #C5B8E7;
+            --text-muted: #9F93C5;
+            --text-link: var(--ether-cyan);
+
+            /* Transitions & Durations */
+            --transition-fast: 0.12s;
+            --transition-std: 0.2s;
+            --transition-slow: 0.3s;
+
+            /* Radii */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 20px;
+            --radius-round: 50%;
+
+            /* Spacing */
+            --space-xs: 0.25rem; /* 4px */
+            --space-sm: 0.5rem;  /* 8px */
+            --space-md: 1rem;    /* 16px */
+            --space-lg: 1.5rem;  /* 24px */
+            --space-xl: 2rem;    /* 32px */
+            --space-xxl: 3rem;   /* 48px */
+        }
+
+        /* Color-blind mode adjustments */
+        .colorblind-mode {
+            --void-magenta: #FF8C42; /* Orange alternative */
+            /* Add other adjustments if --void-magenta was used with colors that now clash */
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px; /* Base font size */
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background-color: var(--violet-abyss);
+            color: var(--text-primary);
+            font-family: "Inter", sans-serif;
+            font-size: 0.95rem; /* Body text size */
+            line-height: 1.6;   /* Body line height */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        /* Skip Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--arcane-orchid);
+            color: var(--text-primary);
+            padding: var(--space-sm);
+            z-index: 10000;
+            transition: top var(--transition-std) ease-out;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Accessibility: Focus visible */
+        :focus-visible {
+            outline: 2px dashed var(--ether-cyan);
+            outline-offset: 2px;
+            box-shadow: 0 0 0 4px rgba(75, 195, 239, 0.3); /* Softer outer glow for focus */
+        }
+        /* Remove outline for elements that have custom focus (e.g. buttons with glow) if needed, but generally keep it */
+        button:focus-visible, input:focus-visible { /* Example: if buttons have their own strong focus */
+             /* outline: none; /* Only if custom focus is very clear */
+        }
+
+
+        /* Typography */
+        h1, .h1-style {
+            font-family: "Cinzel Decorative", "IM Fell English SC", serif;
+            font-size: 2.5rem;
+            line-height: 1.2;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
+            transition: text-shadow var(--transition-std);
+        }
+        h1:hover, .h1-style:hover {
+            text-shadow: 0 0 8px var(--rune-glow), 0 0 12px var(--arcane-orchid);
+        }
+
+        h2, .h2-style {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 1.8rem;
+            line-height: 1.3;
+            color: var(--text-secondary);
+            margin-top: var(--space-xl);
+            margin-bottom: var(--space-md);
+        }
+
+        h3, .h3-style {
+            font-family: "Inter", sans-serif; /* As per nav, using Inter for H3/H4 */
+            font-size: 1.4rem;
+            line-height: 1.3;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: var(--space-lg);
+            margin-bottom: var(--space-sm);
+        }
+        
+        h4, .h4-style {
+            font-family: "Inter", sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.3;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: var(--space-md);
+            margin-bottom: var(--space-xs);
+        }
+
+        p {
+            margin-bottom: var(--space-md);
+            max-width: 70ch; /* Improve readability */
+        }
+
+        a {
+            color: var(--text-link);
+            text-decoration: none;
+            transition: color var(--transition-fast), text-shadow var(--transition-fast);
+        }
+        a:hover, a:focus {
+            color: var(--ether-cyan);
+            text-decoration: underline;
+            text-shadow: 0 0 5px var(--ether-cyan);
+        }
+
+        .caption, .meta-text {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: var(--text-muted);
+        }
+        
+        .mono-stats {
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        /* Utility Classes */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: var(--space-xl) 0;
+        }
+        .text-center { text-align: center; }
+        .mb-sm { margin-bottom: var(--space-sm); }
+        .mb-md { margin-bottom: var(--space-md); }
+        .mb-lg { margin-bottom: var(--space-lg); }
+        .mt-sm { margin-top: var(--space-sm); }
+        .mt-md { margin-top: var(--space-md); }
+        .mt-lg { margin-top: var(--space-lg); }
+
+        /* Reduced Motion Handling */
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            .parallax-bg::before, .parallax-bg::after { display: none; } /* Disable parallax stars */
+        }
+
+        /* --- Component Styles --- */
+
+        /* 1. Nav Bar */
+        .main-nav {
+            background-color: rgba(28, 10, 45, 0.9); /* obsidian-petal with alpha */
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            padding: var(--space-sm) 0;
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(129, 81, 181, 0.2); /* Subtle rune-glow border */
+        }
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .nav-logo {
+            font-family: "Cinzel Decorative", serif;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .nav-logo:hover {
+            color: var(--rune-glow);
+            text-shadow: 0 0 6px var(--rune-glow);
+        }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: var(--space-lg);
+        }
+        .nav-links a {
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+        }
+        .nav-links a:hover, .nav-links a:focus, .nav-links a.active {
+            color: var(--text-primary);
+            background-color: var(--arcane-orchid);
+            text-decoration: none;
+            text-shadow: 0 0 4px var(--rune-glow);
+        }
+        .hamburger-menu {
+            display: none; /* Hidden by default, shown on mobile */
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--space-xs);
+        }
+        .hamburger-icon {
+            width: 24px;
+            height: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .hamburger-icon span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background-color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            transition: transform var(--transition-std), opacity var(--transition-std);
+        }
+        /* Hamburger animation for open state */
+        .main-nav.open .hamburger-icon span:nth-child(1) {
+            transform: translateY(8.5px) rotate(45deg);
+        }
+        .main-nav.open .hamburger-icon span:nth-child(2) {
+            opacity: 0;
+        }
+        .main-nav.open .hamburger-icon span:nth-child(3) {
+            transform: translateY(-8.5px) rotate(-45deg);
+        }
+
+
+        /* 2. Hero Banner */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: var(--space-xl);
+            position: relative;
+            overflow: hidden; /* For parallax */
+        }
+        /* Parallax Starfield Background */
+        .parallax-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background-color: var(--violet-abyss); /* Fallback */
+        }
+        .parallax-bg::before, .parallax-bg::after { /* Two layers for depth */
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                radial-gradient(circle at 10% 20%, var(--obsidian-petal) 0.5px, transparent 1px),
+                radial-gradient(circle at 50% 30%, var(--arcane-orchid) 0.5px, transparent 1px),
+                radial-gradient(circle at 80% 10%, var(--rune-glow) 0.5px, transparent 1px),
+                radial-gradient(circle at 30% 70%, var(--eld-amethyst) 1px, transparent 1.5px),
+                radial-gradient(circle at 70% 90%, var(--obsidian-petal) 1px, transparent 1.5px),
+                radial-gradient(circle at 90% 50%, var(--arcane-orchid) 0.5px, transparent 1px);
+            background-repeat: repeat;
+            will-change: transform; /* Performance hint */
+        }
+        .parallax-bg::before { /* Farther stars, move slower */
+            background-size: 100px 100px;
+            animation: parallax-scroll 120s linear infinite;
+        }
+        .parallax-bg::after { /* Closer stars, move faster */
+            background-size: 70px 70px;
+            opacity: 0.7;
+            animation: parallax-scroll 80s linear infinite reverse;
+        }
+        @keyframes parallax-scroll {
+            from { transform: translateY(0); }
+            to { transform: translateY(-200px); } /* Adjust for desired scroll effect */
+        }
+        .hero-logo {
+            font-family: "Cinzel Decorative", serif;
+            font-size: clamp(2.5rem, 10vw, 5rem); /* Responsive font size */
+            font-weight: 900;
+            color: var(--text-primary);
+            text-shadow: 0 0 10px var(--rune-glow), 0 0 20px var(--arcane-orchid), 0 0 30px var(--obsidian-petal);
+            margin-bottom: var(--space-lg);
+        }
+        .hero-subtitle {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xl);
+            max-width: 60ch;
+        }
+        .hero-cta-group {
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap; /* For smaller screens */
+            justify-content: center;
+        }
+
+        /* 3. Buttons */
+        .btn {
+            display: inline-block;
+            padding: var(--space-sm) var(--space-lg);
+            font-family: "Inter", sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: transform var(--transition-fast) ease-out, box-shadow var(--transition-fast) ease-out, background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+            border: 1px solid transparent;
+            min-width: 150px; /* Ensure decent tap target */
+        }
+        .primary-btn {
+            background: linear-gradient(145deg, var(--arcane-orchid), var(--rune-glow));
+            color: var(--text-primary);
+            border-color: var(--rune-glow);
+            box-shadow: 0 0 6px var(--rune-glow), 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .primary-btn:hover, .primary-btn:focus {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 0 10px var(--rune-glow), 0 0 15px var(--arcane-orchid), 0 4px 8px rgba(0,0,0,0.3);
+            color: white; /* Ensure contrast on brighter glow */
+            text-decoration: none;
+        }
+        .secondary-btn {
+            background: transparent;
+            color: var(--rune-glow);
+            border: 1px solid var(--rune-glow);
+        }
+        .secondary-btn:hover, .secondary-btn:focus {
+            background-color: rgba(129, 81, 181, 0.15); /* rune-glow with alpha */
+            color: var(--ether-cyan);
+            border-color: var(--ether-cyan);
+            box-shadow: 0 0 8px var(--ether-cyan);
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+        .btn.disabled, .btn:disabled {
+            opacity: 0.35;
+            pointer-events: none;
+            box-shadow: none;
+            transform: none;
+        }
+        
+        /* Button Group for showcase */
+        .button-showcase {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+            align-items: center;
+            background-color: var(--obsidian-petal);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+        }
+
+        /* 4. Hex Card Demo */
+        .hex-card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+            background-color: var(--obsidian-petal);
+            border-radius: var(--radius-lg);
+        }
+        .hex-card {
+            width: 100%; /* Responsive width */
+            aspect-ratio: 200 / 230; /* Approximate hexagon aspect ratio for content */
+            position: relative;
+            background: linear-gradient(160deg, var(--obsidian-petal) 0%, var(--eld-amethyst) 100%);
+            clip-path: url(#hexagon-clip);
+            cursor: pointer;
+            transition: transform var(--transition-std) ease-out, filter var(--transition-std) ease-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Push content to top/bottom */
+            padding: calc(var(--space-md) * 1.5) var(--space-md); /* Adjust padding for hex shape */
+            box-sizing: border-box;
+        }
+        .hex-card::before { /* Inner brass rim */
+            content: '';
+            position: absolute;
+            top: 2px; left: 2px; right: 2px; bottom: 2px;
+            clip-path: url(#hexagon-clip);
+            border: 2px solid var(--gilded-brass);
+            opacity: 0.7;
+            transition: opacity var(--transition-std);
+            pointer-events: none; /* Allow clicks through to card */
+        }
+        .hex-card:hover, .hex-card:focus-within {
+            transform: translateY(-5px) scale(1.05);
+            filter: drop-shadow(0 0 12px var(--rune-glow));
+        }
+        .hex-card:hover::before {
+            opacity: 1;
+        }
+        .hex-card-title {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gilded-brass);
+            text-align: center;
+            margin-bottom: var(--space-xs);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .hex-card-cost {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-lg); /* Adjust for hex shape */
+            font-family: "JetBrains Mono", monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            background-color: rgba(0,0,0,0.5);
+            padding: var(--space-xs);
+            border-radius: var(--radius-round);
+            width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--gilded-brass);
+        }
+        .hex-card-ability-list {
+            list-style: none;
+            padding: 0;
+            margin-top: auto; /* Push to bottom */
+        }
+        .hex-card-ability-list li {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xs);
+            text-align: center;
+        }
+        /* Stagger animation for card list (example) */
+        .hex-card-container.staggered-load .hex-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: card-fade-in 0.5s ease-out forwards;
+        }
+        @keyframes card-fade-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* JS would add staggered delays */
+
+
+        /* 5. Hex Grid Mock */
+        .hex-grid-mock-container {
+            padding: var(--space-lg);
+            background-color: var(--obsidian-petal);
+            border-radius: var(--radius-lg);
+        }
+        .hex-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 2px; /* Minimal gap, borders will handle visual separation */
+            justify-content: center; /* Center grid items if they don't fill row */
+            padding-bottom: 30px; /* Space for the bottom half of the last row of hexes */
+        }
+        .hex-grid-cell {
+            position: relative;
+            width: 120px; /* Fixed width for consistency */
+            height: calc(120px * 1.1547); /* Height for equilateral hexagon based on width (W * sqrt(3)/2 * 2 / W = sqrt(3) approx 1.1547 * W / 2 for one half) */
+                                          /* Correct height for a pointy-top hexagon cell is W * sqrt(3) / 2. For a full cell container, it's more complex for grid.
+                                             Using aspect-ratio is better if possible, or a simpler square cell with hex content.
+                                             For this demo, we'll use a simplified approach with clip-path on a square-ish cell. */
+            aspect-ratio: 100 / 115; /* Similar to hex-card */
+            background-color: var(--eld-amethyst);
+            clip-path: url(#hexagon-clip);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            transition: background-color var(--transition-std), filter var(--transition-std);
+            cursor: pointer;
+        }
+        .hex-grid-cell:hover {
+            background-color: var(--arcane-orchid);
+            filter: drop-shadow(0 0 6px var(--rune-glow));
+        }
+        .hex-grid-cell.selected {
+            background-color: var(--arcane-orchid);
+            filter: drop-shadow(0 0 10px var(--ether-cyan)) drop-shadow(0 0 5px var(--ether-cyan) inset);
+            color: var(--text-primary);
+            z-index: 10; /* Bring selected to front */
+        }
+        /* Offset every other row for typical hex grid layout - this is complex with pure CSS grid and clip-path.
+           A common approach is to use negative margins or transform on odd/even rows/items.
+           For a simple demo, we'll keep them aligned. True hex grids often use JS for positioning. */
+        .hex-grid-row:nth-child(odd) .hex-grid-cell:first-child {
+            /* margin-left: 60px; /* Half width offset - only if items are not full width */
+        }
+
+        /* 6. Panel / Container */
+        .panel {
+            background-color: var(--eld-amethyst);
+            border-radius: var(--radius-lg); /* 12px */
+            padding: var(--space-lg); /* 1.5rem */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 0 1px rgba(129, 81, 181, 0.2); /* Shadow + subtle border */
+            overflow: auto; /* For scroll shadows if content overflows */
+            position: relative; /* For scroll shadow pseudo-elements */
+        }
+        /* Scroll shadow indicators (CSS only, basic) */
+        .panel::before, .panel::after { /* Top and bottom shadows */
+            content: '';
+            position: sticky;
+            left: 0;
+            width: 100%;
+            height: var(--space-md); /* Shadow size */
+            z-index: 1;
+            pointer-events: none; /* Allow scrolling through */
+            opacity: 0;
+            transition: opacity var(--transition-std);
+        }
+        .panel::before { /* Top shadow */
+            top: 0;
+            background: linear-gradient(to bottom, var(--eld-amethyst) 0%, transparent 100%);
+        }
+        .panel::after { /* Bottom shadow */
+            bottom: 0;
+            background: linear-gradient(to top, var(--eld-amethyst) 0%, transparent 100%);
+        }
+        .panel.scrolling-top::before { opacity: 1; } /* JS would add these classes */
+        .panel.scrolling-bottom::after { opacity: 1; }
+
+
+        /* 7. Forms / Inputs */
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xs);
+        }
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: var(--space-sm) var(--space-md);
+            background-color: var(--obsidian-petal);
+            color: var(--text-primary);
+            border: 1px solid var(--eld-amethyst);
+            border-radius: var(--radius-md); /* 8px */
+            font-size: 0.95rem;
+            box-shadow: inset 0 1px 3px #00000033;
+            transition: border-color var(--transition-std), box-shadow var(--transition-std);
+        }
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--ether-cyan);
+            box-shadow: inset 0 1px 3px #00000033, 0 0 0 2px var(--ether-cyan);
+            outline: none; /* Custom focus */
+        }
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* 8. Toast / Alert Components */
+        .toast-container {
+            position: fixed;
+            bottom: var(--space-lg);
+            right: var(--space-lg);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        .toast {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            min-width: 250px;
+            max-width: 350px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: toast-slide-in 0.3s ease-out forwards;
+        }
+        @keyframes toast-slide-in {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes toast-fade-out {
+            to { opacity: 0; transform: translateX(50%); }
+        }
+        .toast-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        .toast-success { background-color: var(--success); border-left: 5px solid darken(var(--success), 10%); }
+        .toast-warning { background-color: var(--warning); color: var(--violet-abyss); border-left: 5px solid darken(var(--warning), 10%); }
+        .toast-error   { background-color: var(--error); border-left: 5px solid darken(var(--error), 10%); }
+        .toast-info    { background-color: var(--info); border-left: 5px solid darken(var(--info), 10%); }
+        /* For darker text on light backgrounds like warning */
+        .toast-warning .toast-message { color: var(--violet-abyss); }
+
+
+        /* Visual FX: Glow Pulse & Particles */
+        .pulsing-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 8px currentColor, 0 0 4px currentColor inset; }
+            50% { box-shadow: 0 0 16px currentColor, 0 0 8px currentColor inset; }
+        }
+        .particle-demo-container {
+            position: relative;
+            height: 100px;
+            width: 100%;
+            overflow: hidden;
+            background-color: var(--obsidian-petal);
+            border-radius: var(--radius-md);
+            margin-top: var(--space-md);
+        }
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            bottom: 0; /* Start from bottom */
+            opacity: 0;
+            animation: particle-float 3s ease-out infinite;
+        }
+        @keyframes particle-float {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-80px) scale(1.2); opacity: 0; }
+        }
+        /* JS will create particles with random delays/positions/colors */
+
+        /* Footer */
+        .main-footer {
+            text-align: center;
+            padding: var(--space-xl) var(--space-md);
+            margin-top: var(--space-xxl);
+            border-top: 1px solid var(--obsidian-petal);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .colorblind-toggle-btn {
+            margin-top: var(--space-md);
+            font-size: 0.8rem;
+            padding: var(--space-xs) var(--space-sm);
+            background-color: var(--eld-amethyst);
+            border-color: var(--arcane-orchid);
+            color: var(--text-secondary);
+        }
+        .colorblind-toggle-btn:hover {
+            background-color: var(--arcane-orchid);
+            color: var(--text-primary);
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            html { font-size: 15px; } /* Slightly smaller base for mobile */
+
+            .nav-links {
+                display: none; /* Hide links by default on mobile */
+                position: absolute;
+                top: 100%; /* Position below nav bar */
+                left: 0;
+                width: 100%;
+                background-color: rgba(28, 10, 45, 0.95); /* obsidian-petal with alpha */
+                backdrop-filter: blur(6px);
+                flex-direction: column;
+                align-items: center;
+                padding: var(--space-md) 0;
+                border-top: 1px solid var(--arcane-orchid);
+            }
+            .main-nav.open .nav-links {
+                display: flex; /* Show when nav is open */
+            }
+            .nav-links li { width: 100%; text-align: center; }
+            .nav-links a { display: block; padding: var(--space-md); width: 100%; }
+            .hamburger-menu { display: flex; }
+
+            .hero-logo { font-size: clamp(2rem, 12vw, 3.5rem); }
+            .hero-subtitle { font-size: clamp(0.9rem, 4vw, 1.2rem); }
+
+            .hex-card-container { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+            .hex-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+            .hex-grid-cell { width: 100px; }
+
+            .toast-container {
+                right: var(--space-md);
+                bottom: var(--space-md);
+                width: calc(100% - var(--space-lg)); /* Full width on mobile */
+            }
+            .toast { max-width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            html { font-size: 14px; }
+            .hero-cta-group .btn { width: 100%; margin-bottom: var(--space-sm); } /* Stack buttons */
+            .button-showcase .btn { width: 100%; }
+            .container { padding: var(--space-lg) 0; }
+        }
+
+    </style>
+</head>
+<body>
+    <svg width="0" height="0" style="position:absolute;z-index:-1;overflow:hidden;">
+      <defs>
+        <clipPath id="hexagon-clip" clipPathUnits="objectBoundingBox">
+          <polygon points="0.5 0, 1 0.25, 1 0.75, 0.5 1, 0 0.75, 0 0.25" />
+        </clipPath>
+      </defs>
+    </svg>
+
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <header class="main-nav" id="main-header">
+        <div class="nav-container">
+            <a href="#" class="nav-logo" aria-label="HexCard Forge Nexus Home">HCFN</a>
+            <nav aria-label="Main navigation">
+                <button class="hamburger-menu" id="hamburger-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-link-list">
+                    <span class="hamburger-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </button>
+                <ul class="nav-links" id="nav-link-list" role="menubar">
+                    <li role="none"><a href="#style-guide" role="menuitem">Style Guide</a></li>
+                    <li role="none"><a href="#game-features" role="menuitem">Features</a></li>
+                    <li role="none"><a href="#community" role="menuitem">Community</a></li>
+                    <li role="none"><a href="#support" role="menuitem">Support</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main">
+        <section class="hero-section" aria-labelledby="hero-title">
+            <div class="parallax-bg" aria-hidden="true"></div>
+            <h1 id="hero-title" class="hero-logo">HexCard Forge Nexus</h1>
+            <p class="hero-subtitle">Unleash arcane technologies and strategic mastery in a universe of hexagonal warfare and creation.</p>
+            <div class="hero-cta-group">
+                <button type="button" class="btn primary-btn">Enter the Forge</button>
+                <button type="button" class="btn secondary-btn">Learn the Lore</button>
+            </div>
+        </section>
+
+        <div class="container">
+            <section id="style-guide" aria-labelledby="style-guide-title">
+                <h2 id="style-guide-title" class="h1-style text-center mt-xxl mb-xl">UI Component Style Guide</h2>
+
+                <article class="component-showcase" aria-labelledby="buttons-title">
+                    <h3 id="buttons-title" class="h2-style">Buttons</h3>
+                    <div class="button-showcase">
+                        <button type="button" class="btn primary-btn">Primary Action</button>
+                        <button type="button" class="btn secondary-btn">Secondary Action</button>
+                        <button type="button" class="btn primary-btn pulsing-glow" style="background: var(--void-magenta); border-color: var(--void-magenta); box-shadow: 0 0 8px var(--void-magenta);">Critical CTA (Void)</button>
+                        <button type="button" class="btn primary-btn disabled">Disabled Primary</button>
+                        <button type="button" class="btn secondary-btn disabled">Disabled Secondary</button>
+                    </div>
+                </article>
+
+                <article class="component-showcase" aria-labelledby="cards-title">
+                    <h3 id="cards-title" class="h2-style">Hexagonal Cards</h3>
+                    <div class="hex-card-container" id="hex-card-demo-area">
+                        <div class="hex-card" tabindex="0" aria-labelledby="card1-title">
+                            <span id="card1-title" class="hex-card-title">Mystic Golem</span>
+                            <span class="hex-card-cost mono-stats">5</span>
+                            <ul class="hex-card-ability-list">
+                                <li>Taunt</li>
+                                <li>Siege Engine: +2 ATK vs Structures</li>
+                            </ul>
+                        </div>
+                        <div class="hex-card" tabindex="0" aria-labelledby="card2-title">
+                             <span id="card2-title" class="hex-card-title">Rune of Celerity</span>
+                             <span class="hex-card-cost mono-stats">2</span>
+                            <ul class="hex-card-ability-list">
+                                <li>Grant a unit +1 MOV</li>
+                                <li>Draw a card</li>
+                            </ul>
+                        </div>
+                        <div class="hex-card" tabindex="0" aria-labelledby="card3-title">
+                             <span id="card3-title" class="hex-card-title">Aether Spike</span>
+                             <span class="hex-card-cost mono-stats">3</span>
+                            <ul class="hex-card-ability-list">
+                                <li>Deal 3 damage</li>
+                                <li>Costs 1 less if you control a Forge</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="component-showcase" aria-labelledby="forms-title">
+                    <h3 id="forms-title" class="h2-style">Forms & Inputs</h3>
+                    <div class="panel">
+                        <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Form submitted (demo)');">
+                            <div class="form-group">
+                                <label for="username" class="form-label">Arcane Alias (Username)</label>
+                                <input type="text" id="username" name="username" class="form-input" placeholder="e.g., AetherionSmith" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="spell-incantation" class="form-label">Secret Incantation (Password)</label>
+                                <input type="password" id="spell-incantation" name="password" class="form-input" placeholder="Enter your secret phrase" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message" class="form-label">Missive to the Council</label>
+                                <textarea id="message" name="message" class="form-textarea" rows="4" placeholder="Your thoughts, Aspirant..."></textarea>
+                            </div>
+                            <button type="submit" class="btn primary-btn">Send Missive</button>
+                        </form>
+                    </div>
+                </article>
+
+                <article class="component-showcase" aria-labelledby="alerts-title">
+                    <h3 id="alerts-title" class="h2-style">Alerts / Toasts</h3>
+                    <p>Click buttons to trigger example toasts (bottom-right of screen).</p>
+                    <div class="button-showcase">
+                        <button type="button" class="btn secondary-btn" onclick="showToast('Quest completed successfully!', 'success')">Show Success</button>
+                        <button type="button" class="btn secondary-btn" onclick="showToast('Mana reserves critically low.', 'warning')">Show Warning</button>
+                        <button type="button" class="btn secondary-btn" onclick="showToast('Spell fizzled! Target immune.', 'error')">Show Error</button>
+                        <button type="button" class="btn secondary-btn" onclick="showToast('New lore unlocked in Codex.', 'info')">Show Info</button>
+                    </div>
+                    <div class="toast-container" id="toast-area" aria-live="assertive" aria-atomic="true">
+                        </div>
+                </article>
+                
+                <article class="component-showcase" aria-labelledby="panels-title">
+                    <h3 id="panels-title" class="h2-style">Panels & Containers</h3>
+                    <div class="panel" id="scrollable-panel" style="max-height: 300px; overflow-y: auto;">
+                        <h4 class="h3-style mt-0">Scrollable Lore Panel</h4>
+                        <p>In ages past, when stars were young and magic flowed as free as cosmic rivers, the Forgemasters arose. They were beings of immense power and intellect, capable of shaping reality itself through the intricate weaving of aetheric energies and runic technologies...</p>
+                        <p>Their greatest creations were the Nexus Cores, sentient hexagonal constructs that could channel and amplify arcane power, terraforming worlds and birthing wonders. But such power drew envious eyes. The Void Swarm, an interdimensional horror, sought to consume all light and magic.</p>
+                        <p>A great war erupted, shattering galaxies. The Forgemasters, in a final act of desperation, scattered the Nexus Cores across the cosmos, hoping that one day, new champions would rise to relight the fires of creation and stand against the encroaching darkness.</p>
+                        <p>You, Aspirant, are one such champion. The fate of countless worlds rests upon your ability to master the HexCards, rebuild the Forges, and awaken the Nexus.</p>
+                        <p>The path is perilous, fraught with ancient guardians, rival factions, and the ever-present threat of the Void. But within the hexagonal patterns of fate, greatness awaits those bold enough to seize it.</p>
+                    </div>
+                </article>
+
+                <article class="component-showcase" aria-labelledby="hexgrid-title">
+                    <h3 id="hexgrid-title" class="h2-style">Hexagonal Grid Mock</h3>
+                    <div class="hex-grid-mock-container">
+                        <div class="hex-grid" id="hex-grid-demo">
+                            </div>
+                    </div>
+                </article>
+
+                <article class="component-showcase" aria-labelledby="vfx-title">
+                    <h3 id="vfx-title" class="h2-style">Visual Effects</h3>
+                    <h4 class="h4-style">Pulsing Glow</h4>
+                    <button type="button" class="btn primary-btn pulsing-glow">Pulsing Button</button>
+                    <h4 class="h4-style mt-lg">Particle Demo</h4>
+                    <div class="particle-demo-container" id="particle-container" aria-hidden="true">
+                        </div>
+                </article>
+
+            </section> </div> </main>
+
+    <footer class="main-footer">
+        <p>&copy; <span id="current-year"></span> HexCard Forge Nexus. All rights reserved. Forged in the Aether.</p>
+        <button type="button" class="btn colorblind-toggle-btn" id="colorblind-toggle">Toggle Color-Blind Friendly Palette</button>
+    </footer>
+
+    <script type="module">
+        // --- Minimal JS for Interactivity (Target: <= 80 lines / 2KB Gzip) ---
+
+        // 1. Hamburger Menu Toggle
+        const header = document.getElementById('main-header');
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const navLinkList = document.getElementById('nav-link-list');
+
+        if (hamburgerBtn && navLinkList && header) {
+            hamburgerBtn.addEventListener('click', () => {
+                const isExpanded = hamburgerBtn.getAttribute('aria-expanded') === 'true';
+                hamburgerBtn.setAttribute('aria-expanded', !isExpanded);
+                navLinkList.style.display = isExpanded ? 'none' : 'flex'; // Simple toggle
+                header.classList.toggle('open');
+            });
+        }
+
+        // 2. Color-Blind Mode Toggle
+        const colorblindToggleBtn = document.getElementById('colorblind-toggle');
+        if (colorblindToggleBtn) {
+            colorblindToggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('colorblind-mode');
+                // Optional: Save preference to localStorage
+                // localStorage.setItem('colorblindMode', document.body.classList.contains('colorblind-mode'));
+            });
+            // Optional: Load preference from localStorage
+            // if (localStorage.getItem('colorblindMode') === 'true') {
+            //    document.body.classList.add('colorblind-mode');
+            // }
+        }
+
+        // 3. Toast Notification System
+        const toastArea = document.getElementById('toast-area');
+        window.showToast = (message, type = 'info', duration = 4000) => {
+            if (!toastArea) return;
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.setAttribute('role', 'alert');
+            // Simple icons (could be SVG later)
+            let icon = 'ℹ️';
+            if (type === 'success') icon = '✅';
+            if (type === 'warning') icon = '⚠️';
+            if (type === 'error') icon = '❌';
+            
+            toast.innerHTML = `<span class="toast-icon" aria-hidden="true">${icon}</span> <span class="toast-message">${message}</span>`;
+            toastArea.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'toast-fade-out 0.3s ease-in forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        };
+
+        // 4. Dynamic Content & Year
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // 5. Hex Grid Mock Population
+        const hexGridDemo = document.getElementById('hex-grid-demo');
+        if (hexGridDemo) {
+            for (let i = 0; i < 12; i++) { // Create a few hex cells
+                const cell = document.createElement('div');
+                cell.className = 'hex-grid-cell';
+                cell.textContent = `Cell ${i + 1}`;
+                cell.tabIndex = 0; // Make focusable
+                cell.addEventListener('click', () => {
+                    // Remove 'selected' from other cells
+                    hexGridDemo.querySelectorAll('.selected').forEach(s => s.classList.remove('selected'));
+                    cell.classList.add('selected');
+                });
+                cell.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        cell.click();
+                        e.preventDefault();
+                    }
+                });
+                hexGridDemo.appendChild(cell);
+            }
+        }
+        
+        // 6. Particle Demo
+        const particleContainer = document.getElementById('particle-container');
+        if (particleContainer) {
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 3}s`;
+                particle.style.backgroundColor = Math.random() > 0.5 ? 'var(--ether-cyan)' : 'var(--void-magenta)';
+                particleContainer.appendChild(particle);
+            }
+        }
+
+        // 7. Staggered card load example (simple version)
+        const cardContainer = document.getElementById('hex-card-demo-area');
+        if (cardContainer) {
+            cardContainer.classList.add('staggered-load');
+            const cards = cardContainer.querySelectorAll('.hex-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.04}s`; // 40ms stagger
+            });
+        }
+        
+        // 8. Scrollable Panel Indicators (Basic Example)
+        const scrollablePanel = document.getElementById('scrollable-panel');
+        if (scrollablePanel) {
+            const updateScrollShadows = () => {
+                const st = scrollablePanel.scrollTop;
+                const sh = scrollablePanel.scrollHeight;
+                const ch = scrollablePanel.clientHeight;
+                scrollablePanel.classList.toggle('scrolling-top', st > 0);
+                scrollablePanel.classList.toggle('scrolling-bottom', st < sh - ch -1); // -1 for precision
+            };
+            scrollablePanel.addEventListener('scroll', updateScrollShadows);
+            updateScrollShadows(); // Initial check
+        }
+
+        // Check if JS is very minimal (target <= 80 lines after comments)
+        // Current JS line count is roughly around 80-90 lines without comments.
+        // It's compact and focuses on essential interactivity.
+    </script>
+</body>
+</html>

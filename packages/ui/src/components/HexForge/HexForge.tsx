@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { FC, useEffect, useState, useRef, useCallback } from 'react';
+import { randomUUID } from 'crypto';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { 
@@ -11,14 +12,14 @@ import {
   ForgeResultProps
 } from './types';
 // @ts-ignore - Schema module exists but TS can't find declaration
-import { HexCardType as HexCard, CharacterType as Character, EdgeIconType as EdgeIcon } from 'schema';
+import { HexCardType as HexCard, CharacterType, EdgeIconType as EdgeIcon } from 'schema';
 import ForgeSocket from './ForgeSocket';
 import CardPreview from './CardPreview';
 import ConnectionLine from './ConnectionLine';
 import ForgeResult from './ForgeResult';
 import ForgeParticles from './ForgeParticles';
 import ForgeConfigurationManager from './ForgeConfigurationManager';
-import { useForgeStore } from './useForgeLogic';
+import { useForgeStore, isValidConnection as isEdgeValid } from './useForgeLogic';
 // @ts-ignore - CSS Module exists but TS can't find declaration
 import styles from './styles.module.css';
 
@@ -149,22 +150,64 @@ const calculateCharacterStats = (cards: (HexCard | null)[]): CharacterStats => {
     specialAbilities: []
   };
   
-  // Aggregate stats from cards
+  // Aggregate stats from cards based on their type and properties
   filledCards.forEach(card => {
-    stats.attack += card.stats?.attack || 0;
-    stats.defense += card.stats?.defense || 0;
-    stats.speed += card.stats?.speed || 0;
-    stats.magic += card.stats?.magic || 0;
-    
-    // Add unique abilities
-    if (card.abilities) {
-      card.abilities.forEach((ability: string) => {
-        if (!stats.specialAbilities.includes(ability)) {
-          stats.specialAbilities.push(ability);
-        }
-      });
+    // Calculate stats based on card type
+    switch(card.type) {
+      case 'unit':
+        stats.attack += 1;
+        stats.defense += 1;
+        break;
+      case 'hero':
+        stats.attack += 2;
+        stats.defense += 1;
+        stats.speed += 1;
+        break;
+      case 'spell':
+        stats.magic += 2;
+        stats.speed += 1;
+        break;
+      case 'structure':
+        stats.defense += 3;
+        break;
+      case 'relic':
+        stats.magic += 1;
+        stats.attack += 1;
+        break;
     }
+    
+    // Add bonuses based on edge types
+    card.edges.forEach(edge => {
+      switch(edge) {
+        case 'attack':
+          stats.attack += 0.5;
+          break;
+        case 'defense':
+          stats.defense += 0.5;
+          break;
+        case 'skill':
+          stats.speed += 0.5;
+          break;
+        case 'element':
+          stats.magic += 0.5;
+          break;
+      }
+    });
+    
+    // Generate abilities based on card tags
+    card.tags.forEach(tag => {
+      const ability = `${card.type.charAt(0).toUpperCase() + card.type.slice(1)} ${tag}`;
+      if (!stats.specialAbilities.includes(ability)) {
+        stats.specialAbilities.push(ability);
+      }
+    });
   });
+  
+  // Round stats to integers
+  stats.attack = Math.round(stats.attack);
+  stats.defense = Math.round(stats.defense);
+  stats.speed = Math.round(stats.speed);
+  stats.magic = Math.round(stats.magic);
   
   // Calculate total power
   stats.totalPower = stats.attack + stats.defense + stats.speed + stats.magic;
@@ -188,8 +231,14 @@ const HexForge: FC<HexForgeProps> = ({
   // Socket positions in a hexagonal arrangement
   const socketPositions = calculateSocketPositions();
   
-  // State for the forge
-  const [placedCards, setPlacedCards] = useState<(HexCard | null)[]>(Array(6).fill(null));
+  // Forge state from store
+  const placedCards = useForgeStore(state => state.placedCards);
+  const placeCardAction = useForgeStore(state => state.placeCard);
+  const removeCardAction = useForgeStore(state => state.removeCard);
+  const resetForgeAction = useForgeStore(state => state.resetForge);
+  // Derive used IDs for filtering
+  const usedCardIds = placedCards.filter((c): c is HexCard => c !== null).map(c => c.id);
+  
   const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(null);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [isForgeComplete, setIsForgeComplete] = useState<boolean>(false);
@@ -202,7 +251,7 @@ const HexForge: FC<HexForgeProps> = ({
     specialAbilities: []
   });
   
-  // Visual effects states
+  // Visual effects and config states
   const [tempMessage, setTempMessage] = useState<TemporaryMessage | null>(null);
   const [effects, setEffects] = useState<EffectState[]>([]);
   const [focusedSocket, setFocusedSocket] = useState<number | null>(null);
@@ -215,9 +264,6 @@ const HexForge: FC<HexForgeProps> = ({
     enableParticles: true,
     highContrastMode: false
   });
-  
-  // Track used card IDs to avoid duplicates
-  const [usedCardIds, setUsedCardIds] = useState<string[]>([]);
   
   // Add a temporary message with auto-dismiss
   const addTempMessage = useCallback((text: string, type: 'success' | 'error' | 'info' = 'info', duration = 3000) => {
@@ -254,11 +300,10 @@ const HexForge: FC<HexForgeProps> = ({
     
     // Check if the slot is empty
     if (!placedCards[socketIndex]) {
-      // Place the card and update state
+      // Place the card in store and update local copy
       const newPlacedCards = [...placedCards];
       newPlacedCards[socketIndex] = card;
-      setPlacedCards(newPlacedCards);
-      setUsedCardIds(prev => [...prev, card.id]);
+      placeCardAction(card, socketIndex);
       
       // Trigger placement effect
       if (enableEffects) {
@@ -288,13 +333,10 @@ const HexForge: FC<HexForgeProps> = ({
     
     const card = placedCards[socketIndex];
     if (card) {
-      // Remove the card and update state
+      // Remove the card in store and update local copy
       const newPlacedCards = [...placedCards];
       newPlacedCards[socketIndex] = null;
-      setPlacedCards(newPlacedCards);
-      
-      // Remove from used cards
-      setUsedCardIds(prev => prev.filter(id => id !== card.id));
+      removeCardAction(socketIndex);
       
       // Update connections and stats
       validateConnections(newPlacedCards);
@@ -324,7 +366,8 @@ const HexForge: FC<HexForgeProps> = ({
           // Check if edges are compatible
           const sourceEdge = sourceCard.edges?.[i] || 'default';
           const targetEdge = targetCard.edges?.[nextIndex] || 'default';
-          const isValid = isValidConnection(sourceCard, targetCard);
+          // Validate connection based on edge types
+          const isValid = isEdgeValid(sourceEdge as any, targetEdge as any);
           
           newConnections.push({
             sourceIndex: i,
@@ -405,11 +448,23 @@ const HexForge: FC<HexForgeProps> = ({
       // Call the completion callback after a delay for the animation
       setTimeout(() => {
         if (onForgeComplete) {
-          const character: Character = {
-            id: `forge-${Date.now()}`,
-            name: generateCharacterName(placedCards),
-            cards: placedCards.filter((card): card is HexCard => card !== null),
-            stats
+          // Use the engine's forgeCharacter function
+          const nonNullCards = placedCards.filter((card): card is HexCard => card !== null);
+          const characterName = generateCharacterName(placedCards);
+          
+          // Create a character that matches the schema definition
+          const character: CharacterType = {
+            id: randomUUID(),
+            name: characterName,
+            cardIds: nonNullCards.map(card => card.id),
+            stats: {
+              totalPower: stats.totalPower,
+              attack: stats.attack,
+              defense: stats.defense,
+              speed: stats.speed,
+              magic: stats.magic
+            },
+            abilities: stats.specialAbilities
           };
           
           onForgeComplete(character);
@@ -424,11 +479,23 @@ const HexForge: FC<HexForgeProps> = ({
     } else {
       // Call the completion callback immediately if effects are disabled
       if (onForgeComplete) {
-        const character: Character = {
-          id: `forge-${Date.now()}`,
-          name: generateCharacterName(placedCards),
-          cards: placedCards.filter((card): card is HexCard => card !== null),
-          stats
+        // Use the engine's forgeCharacter function
+        const nonNullCards = placedCards.filter((card): card is HexCard => card !== null);
+        const characterName = generateCharacterName(placedCards);
+        
+        // Create a character that matches the schema definition
+        const character: CharacterType = {
+          id: randomUUID(),
+          name: characterName,
+          cardIds: nonNullCards.map(card => card.id),
+          stats: {
+            totalPower: stats.totalPower,
+            attack: stats.attack,
+            defense: stats.defense,
+            speed: stats.speed,
+            magic: stats.magic
+          },
+          abilities: stats.specialAbilities
         };
         
         onForgeComplete(character);
@@ -439,21 +506,15 @@ const HexForge: FC<HexForgeProps> = ({
   
   // Reset the forge to initial state
   const resetForge = useCallback(() => {
-    setPlacedCards(Array(6).fill(null));
+    // Reset store forge state
+    resetForgeAction();
+    // Reset component UI state
     setConnections([]);
     setIsForgeComplete(false);
-    setUsedCardIds([]);
-    setCharacterStats({
-      totalPower: 0,
-      attack: 0,
-      defense: 0,
-      speed: 0,
-      magic: 0,
-      specialAbilities: []
-    });
+    setCharacterStats({ totalPower:0, attack:0, defense:0, speed:0, magic:0, specialAbilities:[] });
     setEffects([]);
     addTempMessage('Forge reset', 'info');
-  }, [addTempMessage]);
+  }, [resetForgeAction, addTempMessage]);
   
   // Clean up any active effects after they have played
   useEffect(() => {
@@ -466,6 +527,12 @@ const HexForge: FC<HexForgeProps> = ({
     }
   }, [effects]);
   
+  // Synchronize connections and stats whenever placedCards change
+  useEffect(() => {
+    validateConnections(placedCards);
+    updateCharacterStats(placedCards);
+  }, [placedCards, validateConnections, updateCharacterStats]);
+
   // Handle focusing a socket for keyboard navigation
   const handleFocusSocket = useCallback((index: number | null) => {
     setFocusedSocket(index);
@@ -485,13 +552,19 @@ const HexForge: FC<HexForgeProps> = ({
     ));
   }, [connections, socketPositions]);
   
+  // Determine root classes including accessibility mode
+  const rootClasses = [
+    styles.forgeContainer,
+    accessibilityMode ? styles.accessibilityMode : ''
+  ].filter(Boolean).join(' ');
+  
   // Render the component
   return (
-    <div className={styles.hexForgeContainer} role="region" aria-label="Hex Card Forge" ref={forgeContainerRef}>
+    <div className={rootClasses} role="region" aria-label="Hex Card Forge" ref={forgeContainerRef}>
       <DndProvider backend={HTML5Backend}>
         <div className={styles.forgeArea}>
           {/* Render the forge sockets in a hexagonal pattern */}
-          <div className={styles.socketsContainer}>
+          <div className={styles.forgeSocketsContainer}>
             {Array(6).fill(null).map((_, index) => (
               <ForgeSocket
                 key={`socket-${index}`}
